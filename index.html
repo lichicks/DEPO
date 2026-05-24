@@ -50,7 +50,7 @@
         }
         .btn-login:active { transform: scale(0.98); }
 
-        /* 2. SPLASH SCREEN */
+        /* 2. SPLASH SCREEN (Animace načítání) */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
@@ -248,7 +248,10 @@
 
     <script>
         const supabaseUrl = 'https://woyyoirqflacdddxziwv.supabase.co';
-        const supabaseKey = 'Sb_publishable_Vom-QZN0btlOMu55KbUDaw_ZvZPi2dT';
+        
+        // ZDE JE TVŮJ NOVÝ AKTIVNÍ ANON TOKEN
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
+        
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
         let data = { purchases: [], invoices: [], rentPaid: { id: null, Jenda: false, Maty: false, Dominik: false, month: new Date().getMonth() + 1 }, bookings: [] };
@@ -273,14 +276,12 @@
             const btn = document.getElementById('btn-submit');
             btn.innerText = "Ověřuji...";
 
-            // TEĎ UŽ SE DO OPRAVDOVÉHO LOGU ZAPÍŠE PŘESNÁ CHYBA ZE SERVERU
             const { data, error } = await db.auth.signInWithPassword({
                 email: 'jan.lichy.w@gmail.com', 
                 password: input
             });
 
             if (error) {
-                // TADY TOUHLENSTOU ZMĚNOU VYTÁHNEME REÁLNOU CHYBU VEN!
                 alert("Supabase server hlásí: " + error.message);
                 document.getElementById('login-password').value = "";
                 btn.innerText = "ODEMKNOUT";
@@ -303,7 +304,7 @@
             setTimeout(() => splash.style.display = 'none', 400);
         }
 
-        // --- DATABÁZOVÝ MOTOR A VÝPOČTY ---
+        // --- DATABÁZOVÝ MOTOR ---
         async function loadAllData() {
             const { data: pData } = await db.from('purchases').select('*');
             if(pData) { data.purchases = pData.map(p => ({ id: p.id, name: p.name, amount: p.amount, icon: p.icon, paidBy: p.paid_by, split: p.split })); }
