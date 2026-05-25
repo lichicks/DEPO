@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* MODERNÍ DESIGN PROMĚNNÉ - GLASSMORPHISM 2.0 */
+        /* GLASSMORPHISM 2.0 DESIGN */
         :root {
             --bg-dark: #000000;
             --bg-light-dark: #1a1a1c;
@@ -62,7 +62,7 @@
         .app-title { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: 0.02em; }
         .app-subtitle { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-top: 4px; }
         
-        .card { width: 100%; background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: var(--border-glass); border-radius: var(--radius-card); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box; }
+        .card { width: 100%; background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: var(--border-glass); border-radius: var(--radius-card); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box; overflow: hidden; }
         .card-title { font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 1.2rem; letter-spacing: 0.05em; }
 
         /* INTERAKTIVNÍ KALENDÁŘ */
@@ -97,18 +97,20 @@
         .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--color-accent); }
         .nav-item.active svg { transform: translateY(-2px); }
 
-        /* INPUTY A TLAČÍTKA */
-        input, select, textarea { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; }
+        /* VŠEOBECNÉ FORMULÁŘE */
+        input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; }
         input:focus, select:focus, textarea:focus { border: var(--border-highlight); background: rgba(255,255,255,0.08); outline: none; }
         
-        /* ZAŠKRTÁVACÍ POLE POJISTKA PROTI VERTIKÁLNÍMU SMRŠTĚNÍ */
-        input[type="checkbox"] { 
+        /* PŘÍSŇE IZOLOVANÝ STYLE PRO ZAŠKRTÁVACÍ POLE (POJISTKA PROTI VERTIKÁLNÍMU SMRŠTĚNÍ TEXTU) */
+        input[type="checkbox"].todo-checkbox { 
             width: 22px !important; 
             height: 22px !important; 
             accent-color: var(--color-blue); 
-            margin: 0; 
-            flex-shrink: 0; 
+            margin: 0 !important; 
+            flex-shrink: 0 !important; 
             cursor: pointer; 
+            position: relative;
+            z-index: 5;
         }
 
         .btn-add { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 0.95rem; padding: 16px; border-radius: var(--radius-input); border: none; cursor: pointer; margin-top: 5px; text-align: center; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
@@ -136,24 +138,26 @@
         .val-pos { color: var(--color-red); } 
         .val-neg { color: var(--color-green); }
 
-        /* REFORMOVANÝ TO-DO LIST (Konec vertikálního textu) */
-        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
-        .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+        /* REFORMOVANÝ PREMIOVÝ HORIZONTÁLNÍ TO-DO LIST (OPRAVA VERTICAL TEXTU) */
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; position: relative; }
+        .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; position: relative; z-index: 2; }
         .todo-content { flex: 1; min-width: 0; }
         .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; width: 100%; display: block; white-space: normal; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
         .todo-done-text { text-decoration: line-through; opacity: 0.4; color: var(--color-text-muted) !important; }
-        .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; }
-        .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+        
+        /* POJISTKA PRO TO-DO TABS ABY BYLY KLIKATELNÉ */
+        .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; position: relative; z-index: 10; }
+        .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; border: var(--border-glass); }
         .todo-tab.active { background: #fff; color: #000; box-shadow: 0 4px 10px rgba(255,255,255,0.15); border-color: #fff; }
-        .btn-del { background: rgba(255,69,58,0.15); border: 1px solid rgba(255,69,58,0.2); color: var(--color-red); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; }
+        .btn-del { background: rgba(255,69,58,0.15); border: 1px solid rgba(255,69,58,0.2); color: var(--color-red); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; position: relative; z-index: 5; }
 
-        /* ČERNOBÍLÝ ČISTÝ INDIKÁTOR PLŇENÍ ÚKOLŮ */
-        .progress-wrapper { margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 16px; border: var(--border-glass); }
+        /* ČERNOBÍLÝ STATUS BAR */
+        .progress-wrapper { margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 16px; border: var(--border-glass); width: 100%; box-sizing: border-box; }
         .progress-text { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
         .progress-bar-fill { height: 100%; width: 0%; background: #ffffff; border-radius: 3px; transition: width 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); box-shadow: 0 0 8px #fff; }
 
-        /* HISTORIE A SEZNAMY V FINANCÍCH */
+        /* HISTORIE A SEZNAMY V FINANCÍCH A BOOKINGU */
         .list-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); width: 100%; }
         .list-item:last-child { border-bottom: none; }
         .item-info { flex: 1; min-width: 0; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-start; }
@@ -170,12 +174,12 @@
     <div id="login-screen">
         <h1>DEPO</h1>
         <select id="login-user" class="login-select">
-            <option value="" disabled selected>Vyber své jméno</option>
+            <option value="" disabled selected>Kdo jsi?</option>
             <option value="Jenda">Jenda</option>
             <option value="Maty">Maty</option>
             <option value="Dominik">Dominik</option>
         </select>
-        <input type="password" id="login-password" placeholder="Prístupový kód">
+        <input type="password" id="login-password" placeholder="••••••••">
         <button id="btn-submit" class="btn-login" onclick="verifyPassword()">ODEMKNOUT</button>
     </div>
     <div id="splash-screen"><h1>DEPO</h1></div>
@@ -184,7 +188,7 @@
         <div class="header">
             <div>
                 <h1 class="app-title">DEPO</h1>
-                <p class="app-subtitle">Dnes je <span id="today-date" style="color:var(--color-accent);"></span></p>
+                <p class="app-subtitle">Dnes je <span id="today-date" style="color:var(--color-accent); font-weight: 700;"></span></p>
             </div>
             <div class="presence-container">
                 <div class="presence-dot" id="pres-jenda">J</div>
@@ -345,7 +349,7 @@
             <div class="card">
                 <h2 class="card-title">Nová Faktura / Session</h2>
                 <input type="text" id="inv-client" placeholder="Jméno klienta / Projekt">
-                <div class="form-row"><input type="number" id="inv-rec" placeholder="Hodin nahrávání"><input type="number" id="inv-mix" placeholder="Hodin mixu"></div>
+                <div class="form-row"><input type="number" id="inv-rec" placeholder="Hodin nahrávání"><input type="number" id="inv-mix" placeholder="Hodin mix"></div>
                 <div class="form-row"><input type="number" id="inv-amount" placeholder="Cena BEZ DPH"><select id="inv-type"><option value="Faktura">Na Fakturu</option><option value="Hotově">Hotově</option></select></div>
                 <button class="btn-add" onclick="addInvoice()">Uložit příjmy</button>
             </div>
@@ -376,8 +380,8 @@
             </div>
 
             <div class="todo-tabs">
-                <div id="tab-active" class="todo-tab active" onclick="setTodoFilter('active')">Aktivní</div>
-                <div id="tab-done" class="todo-tab" onclick="setTodoFilter('done')">Hotové</div>
+                <button type="button" id="tab-active" class="todo-tab active" onclick="setTodoFilter('active')">Aktivní</button>
+                <button type="button" id="tab-done" class="todo-tab" onclick="setTodoFilter('done')">Hotové</button>
             </div>
 
             <div class="card" style="padding: 10px 1.25rem;">
@@ -397,7 +401,7 @@
 
     <script>
         const supabaseUrl = 'https://woyyoirqflacdddxziwv.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24ifoiYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
         let data = { purchases: [], invoices: [], rentPaid: {}, bookings: [], todos: [], availableDays: [], awayPeriods: [] };
@@ -411,7 +415,7 @@
             const userSelect = document.getElementById('login-user').value;
             const input = document.getElementById('login-password').value;
             if(!userSelect) return alert("Vyber prosím svoje jméno!");
-            if(!input) return alert("Zadej prístupový kód štúdia!");
+            if(!input) return alert("Zadej přístupový kód štúdia!");
             
             const btn = document.getElementById('btn-submit'); btn.innerText = "Ověřuji...";
             
@@ -427,10 +431,13 @@
 
         async function startApp() {
             loggedUser = localStorage.getItem('depo_user');
-            if(!loggedUser) { return; }
+            if(!loggedUser) return;
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
+            
+            // Bezpečné usazení dnešního data do DOMu až po jeho kompletním načtení
+            document.getElementById('today-date').innerText = new Date().toLocaleDateString('cs-CZ');
             
             await loadAllData(); 
             renderCalendar(); 
@@ -440,7 +447,7 @@
             setInterval(pingPresence, 60000);
         }
 
-        // BEZPEČNÉ SEPAROVANÉ NAČÍTÁNÍ (Chyba v jedné tabulce nesestřelí zbytek aplikace)
+        // SEPAROVANÉ NAČÍTÁNÍ (Jedna padlá tabulka neshodí zbytek skriptů)
         async function loadAllData() {
             try {
                 const pReq = await db.from('purchases').select('*').order('id', { ascending: false });
@@ -546,7 +553,7 @@
         }
 
         function updateUI() {
-            // VÝPOČTY FINANCÍ
+            // RESPONZIVNÍ VÝPOČET FINANCÍ
             let debts = { ...baselineEquipDebt };
             document.getElementById('purchases-list').innerHTML = '';
             
@@ -570,7 +577,7 @@
                 if(el) { el.innerText = Math.abs(diff) + " Kč"; el.className = 'balance-val ' + (diff > 0 ? 'val-pos' : (diff < 0 ? 'val-neg' : '')); if(diff === 0) el.style.color = 'var(--color-text)'; }
             });
 
-            // RENDERING TO-DO LISTU S POKROKEM
+            // RENDERING BEZCHYBNÉHO HORIZONTÁLNÍHO TO-DO LISTU
             document.getElementById('todos-list').innerHTML = '';
             let filteredTodos = data.todos.filter(t => currentTodoFilter === 'done' ? t.is_done : !t.is_done);
             if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding: 10px;">Žádné úkoly k zobrazení</div>';
@@ -580,7 +587,7 @@
                 document.getElementById('todos-list').innerHTML += `
                 <div class="todo-item">
                     <div class="todo-main">
-                        <input type="checkbox" ${t.is_done ? 'checked' : ''} onchange="toggleTodo(${idx}, this.checked)">
+                        <input type="checkbox" class="todo-checkbox" ${t.is_done ? 'checked' : ''} onchange="toggleTodo(${idx}, this.checked)">
                         <div class="todo-content">
                             <span class="todo-title ${t.is_done ? 'todo-done-text' : ''}">${t.title}</span>
                         </div>
@@ -589,6 +596,7 @@
                 </div>`;
             });
 
+            // Výpočet ukazatele pokroku úkolů
             let totalTodos = data.todos.length;
             let doneTodos = data.todos.filter(t => t.is_done).length;
             let pct = totalTodos > 0 ? Math.round((doneTodos / totalTodos) * 100) : 0;
@@ -702,13 +710,14 @@
             } 
         }
         
+        function setTodoFilter(f) { currentTodoFilter = f; updateUI(); }
         function toggleRentView(v) { if(v) { document.getElementById('finance-main').classList.add('hidden'); document.getElementById('finance-rent').classList.remove('hidden'); } else { document.getElementById('finance-main').classList.remove('hidden'); document.getElementById('finance-rent').classList.add('hidden'); } }
         function exportInvoicePDF(idx) { const inv = data.invoices[idx]; const total = Math.round(inv.amount * 1.21); const dph = Math.round(inv.amount * 0.21); const htmlContent = `<div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; background: #fff; width: 800px;"><div style="border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between;"><h1 style="margin: 0; color: #000;">FAKTURA</h1><h2 style="margin: 0; color: #666;">DEPO Studio</h2></div><div style="display: flex; justify-content: space-between; margin-bottom: 40px;"><div><p style="margin: 0 0 5px 0;"><strong>Dodavatel:</strong></p><p style="margin: 0;">DEPO Studio</p><p style="margin: 0;">Pardubice</p></div><div style="text-align: right;"><p style="margin: 0 0 5px 0;"><strong>Odběratel / Projekt:</strong></p><p style="margin: 0; font-size: 1.2em; font-weight: bold;">${inv.client}</p></div></div><p><strong>Typ platby:</strong> ${inv.type}</p><p><strong>Detaily práce:</strong> Nahrávání ${inv.rec}h, Mix/Master ${inv.mix}h</p><table style="width: 100%; border-collapse: collapse; margin-top: 30px;"><thead><tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;"><th style="text-align: left; padding: 12px;">Popis služby</th><th style="text-align: right; padding: 12px;">Základ daně</th><th style="text-align: right; padding: 12px;">DPH (21%)</th><th style="text-align: right; padding: 12px;">Celkem</th></tr></thead><tbody><tr style="border-bottom: 1px solid #eee;"><td style="padding: 15px 12px;">Studiové služby a pronájem</td><td style="text-align: right; padding: 15px 12px;">${inv.amount} Kč</td><td style="text-align: right; padding: 15px 12px;">${dph} Kč</td><td style="text-align: right; padding: 15px 12px; font-weight: bold;">${total} Kč</td></tr></tbody></table><div style="margin-top: 50px; text-align: right;"><h3 style="margin: 0;">K úhradě celkem:</h3><p style="font-size: 1.8em; font-weight: bold; color: #000; margin: 5px 0 0 0;">${total} Kč</p></div><div style="margin-top: 80px; font-size: 0.8em; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">Vystaveno automatizovaným systémem DEPO Studio.</div></div>`; const container = document.getElementById('pdf-template'); container.innerHTML = htmlContent; html2pdf().set({ margin: 0, filename: `Faktura_${inv.client.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(container.children[0]).save(); }
 
         // Automatické přihlášení z mezipaměti telefonu
         window.addEventListener('load', () => {
             const savedUser = localStorage.getItem('depo_user');
-            if (savedUser) { startApp(); }
+            if (savedUser) startApp();
         });
     </script>
 </body>
