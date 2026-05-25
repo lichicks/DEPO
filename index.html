@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* GLASSMORPHISM 2.0 DESIGN */
+        /* MODERNÍ DESIGN PROMĚNNÉ - GLASSMORPHISM 2.0 */
         :root {
             --bg-dark: #000000;
             --bg-light-dark: #1a1a1c;
@@ -97,20 +97,21 @@
         .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--color-accent); }
         .nav-item.active svg { transform: translateY(-2px); }
 
-        /* VŠEOBECNÉ FORMULÁŘE */
-        input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; }
+        /* OPRAVENÉ INPUTY A TLAČÍTKA (Pojistka proti přetékání do šířky) */
+        input:not([type="checkbox"]), select, textarea { 
+            width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); 
+            padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; 
+        }
         input:focus, select:focus, textarea:focus { border: var(--border-highlight); background: rgba(255,255,255,0.08); outline: none; }
         
-        /* PŘÍSŇE IZOLOVANÝ STYLE PRO ZAŠKRTÁVACÍ POLE (POJISTKA PROTI VERTIKÁLNÍMU SMRŠTĚNÍ TEXTU) */
-        input[type="checkbox"].todo-checkbox { 
+        /* TVRDÁ POJISTKA PRO ZAŠKRTÁVACÍ POLE (Aby nerozbíjelo karty!) */
+        input[type="checkbox"] { 
             width: 22px !important; 
             height: 22px !important; 
             accent-color: var(--color-blue); 
-            margin: 0 !important; 
-            flex-shrink: 0 !important; 
+            margin: 0; 
+            flex-shrink: 0; 
             cursor: pointer; 
-            position: relative;
-            z-index: 5;
         }
 
         .btn-add { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 0.95rem; padding: 16px; border-radius: var(--radius-input); border: none; cursor: pointer; margin-top: 5px; text-align: center; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
@@ -121,7 +122,7 @@
 
         .checkbox-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; width: 100%; }
         .checkbox-label { display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; background: var(--bg-input); padding: 12px 14px; border-radius: 12px; border: var(--border-glass); cursor: pointer; flex: 1; min-width: 80px; transition: all 0.2s; }
-        .checkbox-label input { width: 18px !important; height: 18px !important; margin: 0 8px 0 0; }
+        .checkbox-label input { margin-right: 8px !important; }
 
         /* ČASOVÉ BLOKY */
         .blocks-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 1rem; width: 100%; box-sizing: border-box; overflow: hidden; }
@@ -138,28 +139,27 @@
         .val-pos { color: var(--color-red); } 
         .val-neg { color: var(--color-green); }
 
-        /* REFORMOVANÝ PREMIOVÝ HORIZONTÁLNÍ TO-DO LIST (OPRAVA VERTICAL TEXTU) */
-        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; position: relative; }
-        .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; position: relative; z-index: 2; }
-        .todo-content { flex: 1; min-width: 0; }
-        .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; width: 100%; display: block; white-space: normal; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
+        /* REFORMOVANÝ SLEEK TO-DO LIST S HORIZONTÁLNÍM ZALAMOVÁNÍM TEXTU */
+        .todo-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .todo-main { display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 0; }
+        .todo-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+        .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; width: 100%; display: block; overflow-wrap: anywhere; word-break: break-word; }
         .todo-done-text { text-decoration: line-through; opacity: 0.4; color: var(--color-text-muted) !important; }
-        
-        /* POJISTKA PRO TO-DO TABS ABY BYLY KLIKATELNÉ */
         .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; position: relative; z-index: 10; }
-        .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; border: var(--border-glass); }
+        .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
         .todo-tab.active { background: #fff; color: #000; box-shadow: 0 4px 10px rgba(255,255,255,0.15); border-color: #fff; }
-        .btn-del { background: rgba(255,69,58,0.15); border: 1px solid rgba(255,69,58,0.2); color: var(--color-red); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; position: relative; z-index: 5; }
+        .btn-del { background: rgba(255,69,58,0.15); border: 1px solid rgba(255,69,58,0.2); color: var(--color-red); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; }
 
-        /* ČERNOBÍLÝ STATUS BAR */
-        .progress-wrapper { margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 16px; border: var(--border-glass); width: 100%; box-sizing: border-box; }
+        /* ČERNOBÍLÝ MINIMALIST STATUS BAR PRO ÚKOLY */
+        .progress-wrapper { margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 16px; border: var(--border-glass); }
         .progress-text { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
         .progress-bar-fill { height: 100%; width: 0%; background: #ffffff; border-radius: 3px; transition: width 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); box-shadow: 0 0 8px #fff; }
 
-        /* HISTORIE A SEZNAMY V FINANCÍCH A BOOKINGU */
+        /* VŠEOBECNÉ SEZNAMY */
         .list-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); width: 100%; }
         .list-item:last-child { border-bottom: none; }
+        .item-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--bg-input); border: var(--border-glass); display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0; }
         .item-info { flex: 1; min-width: 0; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-start; }
         .item-title { font-size: 1rem; font-weight: 600; color: #ffffff; white-space: normal; word-break: break-word; margin: 0; text-align: left; }
         .item-sub { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px; }
@@ -188,7 +188,7 @@
         <div class="header">
             <div>
                 <h1 class="app-title">DEPO</h1>
-                <p class="app-subtitle">Dnes je <span id="today-date" style="color:var(--color-accent); font-weight: 700;"></span></p>
+                <p class="app-subtitle">Dnes je <span id="today-date" style="color:var(--color-accent);"></span></p>
             </div>
             <div class="presence-container">
                 <div class="presence-dot" id="pres-jenda">J</div>
@@ -401,7 +401,7 @@
 
     <script>
         const supabaseUrl = 'https://woyyoirqflacdddxziwv.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24ifoiYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
         let data = { purchases: [], invoices: [], rentPaid: {}, bookings: [], todos: [], availableDays: [], awayPeriods: [] };
@@ -411,33 +411,40 @@
 
         const baselineEquipDebt = { Jenda: -46440, Maty: -2270, Dominik: 11366, Nikolas: 20127, Filip: 13397 };
 
+        // BEZPEČNÉ PŘIDÁNÍ DATA (Vykreslí se jakmile se načte DOM)
+        window.addEventListener('DOMContentLoaded', () => {
+            const dateEl = document.getElementById('today-date');
+            if(dateEl) dateEl.innerText = new Date().toLocaleDateString('cs-CZ');
+        });
+
+        // AUTENTIKACE DO STUDIA
         async function verifyPassword() {
             const userSelect = document.getElementById('login-user').value;
             const input = document.getElementById('login-password').value;
             if(!userSelect) return alert("Vyber prosím svoje jméno!");
-            if(!input) return alert("Zadej přístupový kód štúdia!");
+            if(!input) return alert("Zadej prístupový kód štúdia!");
             
             const btn = document.getElementById('btn-submit'); btn.innerText = "Ověřuji...";
             
-            if(input.toLowerCase() === 'depo') {
-                localStorage.setItem('depo_user', userSelect);
-                startApp();
-            } else {
+            // Standardní Supabase Auth, zajišťuje přístup k datům!
+            const { error } = await db.auth.signInWithPassword({ email: 'jan.lichy.w@gmail.com', password: input });
+            
+            if (error) { 
                 alert("Nesprávný přístupový kód štúdia!");
                 document.getElementById('login-password').value = "";
                 btn.innerText = "ODEMKNOUT";
+            } else {
+                localStorage.setItem('depo_user', userSelect);
+                startApp();
             }
         }
 
         async function startApp() {
             loggedUser = localStorage.getItem('depo_user');
-            if(!loggedUser) return;
+            if(!loggedUser) { db.auth.signOut(); location.reload(); return; }
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
-            
-            // Bezpečné usazení dnešního data do DOMu až po jeho kompletním načtení
-            document.getElementById('today-date').innerText = new Date().toLocaleDateString('cs-CZ');
             
             await loadAllData(); 
             renderCalendar(); 
@@ -447,48 +454,16 @@
             setInterval(pingPresence, 60000);
         }
 
-        // SEPAROVANÉ NAČÍTÁNÍ (Jedna padlá tabulka neshodí zbytek skriptů)
+        // SEPAROVANÉ NAČÍTÁNÍ (Když chybí tabulka, nespadne to)
         async function loadAllData() {
-            try {
-                const pReq = await db.from('purchases').select('*').order('id', { ascending: false });
-                if(pReq.data) data.purchases = pReq.data.map(p => ({ id: p.id, name: p.name, amount: p.amount, icon: p.icon, paidBy: p.paid_by, split: p.split }));
-            } catch(e){}
-
-            try {
-                const iReq = await db.from('invoices').select('*').order('id', { ascending: false });
-                if(iReq.data) data.invoices = iReq.data.map(i => ({ id: i.id, client: i.client, rec: i.rec, mix: i.mix, amount: i.amount, type: i.type }));
-            } catch(e){}
-
-            try {
-                const bReq = await db.from('bookings').select('*');
-                if(bReq.data) data.bookings = bReq.data.map(b => ({ id: b.id, date: b.date, from: b.start_hour, to: b.end_hour, name: b.name, phone: b.phone, crew: b.crew || '', services: b.services || '', notes: b.notes || '' }));
-            } catch(e){}
-
-            try {
-                const tReq = await db.from('todos').select('*').order('id', { ascending: false });
-                if(tReq.data) data.todos = tReq.data;
-            } catch(e){}
-
-            try {
-                const aDaysReq = await db.from('available_days').select('*');
-                if(aDaysReq.data) data.availableDays = aDaysReq.data;
-            } catch(e){}
-
-            try {
-                const aPerReq = await db.from('away_periods').select('*');
-                if(aPerReq.data) data.awayPeriods = aPerReq.data;
-            } catch(e){}
-
-            try {
-                const bankReq = await db.from('studio_bank').select('balance').eq('id', 1).single();
-                if(bankReq.data) document.getElementById('bank-val').innerText = bankReq.data.balance;
-            } catch(e){}
-
-            try {
-                const currentMonth = new Date().getMonth() + 1;
-                let { data: rData } = await db.from('rent').select('*').eq('month', currentMonth);
-                if(rData && rData.length > 0) { data.rentPaid = { id: rData[0].id, Jenda: rData[0].jenda_paid, Maty: rData[0].maty_paid, Dominik: rData[0].dominik_paid, month: currentMonth }; }
-            } catch(e){}
+            try { const pReq = await db.from('purchases').select('*').order('id', { ascending: false }); if(pReq.data) data.purchases = pReq.data.map(p => ({ id: p.id, name: p.name, amount: p.amount, icon: p.icon, paidBy: p.paid_by, split: p.split })); } catch(e){}
+            try { const iReq = await db.from('invoices').select('*').order('id', { ascending: false }); if(iReq.data) data.invoices = iReq.data.map(i => ({ id: i.id, client: i.client, rec: i.rec, mix: i.mix, amount: i.amount, type: i.type })); } catch(e){}
+            try { const bReq = await db.from('bookings').select('*'); if(bReq.data) data.bookings = bReq.data.map(b => ({ id: b.id, date: b.date, from: b.start_hour, to: b.end_hour, name: b.name, phone: b.phone, crew: b.crew || '', services: b.services || '', notes: b.notes || '' })); } catch(e){}
+            try { const tReq = await db.from('todos').select('*').order('id', { ascending: false }); if(tReq.data) data.todos = tReq.data; } catch(e){}
+            try { const aDaysReq = await db.from('available_days').select('*'); if(aDaysReq.data) data.availableDays = aDaysReq.data; } catch(e){}
+            try { const aPerReq = await db.from('away_periods').select('*'); if(aPerReq.data) data.awayPeriods = aPerReq.data; } catch(e){}
+            try { const bankReq = await db.from('studio_bank').select('balance').eq('id', 1).single(); if(bankReq.data) document.getElementById('bank-val').innerText = bankReq.data.balance; } catch(e){}
+            try { const currentMonth = new Date().getMonth() + 1; let { data: rData } = await db.from('rent').select('*').eq('month', currentMonth); if(rData && rData.length > 0) { data.rentPaid = { id: rData[0].id, Jenda: rData[0].jenda_paid, Maty: rData[0].maty_paid, Dominik: rData[0].dominik_paid, month: currentMonth }; } } catch(e){}
         }
 
         function renderCalendar() {
@@ -577,26 +552,28 @@
                 if(el) { el.innerText = Math.abs(diff) + " Kč"; el.className = 'balance-val ' + (diff > 0 ? 'val-pos' : (diff < 0 ? 'val-neg' : '')); if(diff === 0) el.style.color = 'var(--color-text)'; }
             });
 
-            // RENDERING BEZCHYBNÉHO HORIZONTÁLNÍHO TO-DO LISTU
+            // RENDERING BEZCHYBNÉHO TO-DO LISTU
             document.getElementById('todos-list').innerHTML = '';
             let filteredTodos = data.todos.filter(t => currentTodoFilter === 'done' ? t.is_done : !t.is_done);
             if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding: 10px;">Žádné úkoly k zobrazení</div>';
             
             filteredTodos.forEach(t => {
                 let idx = data.todos.findIndex(dt => dt.id === t.id);
+                let badgeClass = `badge-${t.category}`;
                 document.getElementById('todos-list').innerHTML += `
                 <div class="todo-item">
                     <div class="todo-main">
                         <input type="checkbox" class="todo-checkbox" ${t.is_done ? 'checked' : ''} onchange="toggleTodo(${idx}, this.checked)">
                         <div class="todo-content">
                             <span class="todo-title ${t.is_done ? 'todo-done-text' : ''}">${t.title}</span>
+                            <span class="badge ${badgeClass}">${t.category}</span>
                         </div>
                     </div>
                     <button class="btn-del" onclick="delData('todos', ${idx})">×</button>
                 </div>`;
             });
 
-            // Výpočet ukazatele pokroku úkolů
+            // Výpočet indikátoru pokroku úkolů
             let totalTodos = data.todos.length;
             let doneTodos = data.todos.filter(t => t.is_done).length;
             let pct = totalTodos > 0 ? Math.round((doneTodos / totalTodos) * 100) : 0;
@@ -697,27 +674,39 @@
             if(!error) { document.getElementById('away-from').value = ''; document.getElementById('away-to').value = ''; await loadAllData(); renderCalendar(); updateUI(); }
         }
 
+        async function updateStudioBank() {
+            let current = document.getElementById('bank-val').innerText;
+            let newVal = prompt("Zadej nový celkový zůstatek Studio Banku:", current);
+            if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
+                document.getElementById('bank-val').innerText = newVal;
+                await db.from('studio_bank').upsert({ id: 1, balance: parseFloat(newVal) });
+            }
+        }
+
         async function addPurchase() { let name = document.getElementById('pur-name').value; let amount = parseFloat(document.getElementById('pur-amount').value); let icon = document.getElementById('pur-icon').value; let paidBy = document.getElementById('pur-paidBy').value; let split = document.getElementById('pur-split').value; if(!name || !amount || !paidBy) return alert("Vyplň vše!"); const { error } = await db.from('purchases').insert([{ name: name, amount: Math.round(amount), icon: icon, paid_by: paidBy, split: split }]); if(!error) { document.getElementById('pur-name').value = ''; document.getElementById('pur-amount').value = ''; await loadAllData(); updateUI(); } }
-        async function addTodo() { let title = document.getElementById('todo-title').value; if(!title) return; const { error } = await db.from('todos').insert([{ title: title, category: 'ostatni', is_done: false }]); if(!error) { document.getElementById('todo-title').value = ''; await loadAllData(); updateUI(); } }
+        async function addTodo() { let title = document.getElementById('todo-title').value; let cat = document.getElementById('todo-category').value; if(!title) return; const { error } = await db.from('todos').insert([{ title: title, category: cat, is_done: false }]); if(!error) { document.getElementById('todo-title').value = ''; await loadAllData(); updateUI(); } }
         async function toggleTodo(idx, isDone) { const item = data.todos[idx]; await db.from('todos').update({ is_done: isDone }).eq('id', item.id); await loadAllData(); updateUI(); }
         async function addInvoice() { let client = document.getElementById('inv-client').value; let rec = document.getElementById('inv-rec').value || 0; let mix = document.getElementById('inv-mix').value || 0; let amount = parseFloat(document.getElementById('inv-amount').value); let type = document.getElementById('inv-type').value; if(!client || !amount) return; const { error } = await db.from('invoices').insert([{ client: client, rec: rec, mix: mix, amount: Math.round(amount), type: type }]); if(!error) { document.getElementById('inv-client').value = ''; document.getElementById('inv-amount').value = ''; await loadAllData(); updateUI(); } }
         async function payRent(person) { let isPaid = data.rentPaid[person]; if(isPaid) { if(!confirm(`Zrušit platbu pro osobu ${person}?`)) return; isPaid = false; } else { isPaid = true; } let updateObj = {}; if (person === 'Jenda') updateObj.jenda_paid = isPaid; if (person === 'Maty') updateObj.maty_paid = isPaid; if (person === 'Dominik') updateObj.dominik_paid = isPaid; await db.from('rent').update(updateObj).eq('id', data.rentPaid.id); await loadAllData(); updateUI(); }
         
         async function delData(type, index, isArrayIdx = false) { 
-            if(confirm("Opravdu smazat?")) { 
+            if(confirm("Opravdu smazat z cloudu?")) { 
                 let item = (type === 'available_days') ? data.availableDays[index] : (type === 'away_periods' ? data.awayPeriods[index] : data[type][index]); 
                 if(item && item.id) { await db.from(type).delete().eq('id', item.id); await loadAllData(); if(type==='available_days' || type==='away_periods' || type==='bookings') renderCalendar(); updateUI(); } 
             } 
         }
         
-        function setTodoFilter(f) { currentTodoFilter = f; updateUI(); }
+        function setTodoFilter(f) { currentTodoFilter = f; document.getElementById('tab-active').className = f === 'active' ? 'todo-tab active' : 'todo-tab'; document.getElementById('tab-done').className = f === 'done' ? 'todo-tab active' : 'todo-tab'; updateUI(); }
         function toggleRentView(v) { if(v) { document.getElementById('finance-main').classList.add('hidden'); document.getElementById('finance-rent').classList.remove('hidden'); } else { document.getElementById('finance-main').classList.remove('hidden'); document.getElementById('finance-rent').classList.add('hidden'); } }
         function exportInvoicePDF(idx) { const inv = data.invoices[idx]; const total = Math.round(inv.amount * 1.21); const dph = Math.round(inv.amount * 0.21); const htmlContent = `<div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; background: #fff; width: 800px;"><div style="border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between;"><h1 style="margin: 0; color: #000;">FAKTURA</h1><h2 style="margin: 0; color: #666;">DEPO Studio</h2></div><div style="display: flex; justify-content: space-between; margin-bottom: 40px;"><div><p style="margin: 0 0 5px 0;"><strong>Dodavatel:</strong></p><p style="margin: 0;">DEPO Studio</p><p style="margin: 0;">Pardubice</p></div><div style="text-align: right;"><p style="margin: 0 0 5px 0;"><strong>Odběratel / Projekt:</strong></p><p style="margin: 0; font-size: 1.2em; font-weight: bold;">${inv.client}</p></div></div><p><strong>Typ platby:</strong> ${inv.type}</p><p><strong>Detaily práce:</strong> Nahrávání ${inv.rec}h, Mix/Master ${inv.mix}h</p><table style="width: 100%; border-collapse: collapse; margin-top: 30px;"><thead><tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;"><th style="text-align: left; padding: 12px;">Popis služby</th><th style="text-align: right; padding: 12px;">Základ daně</th><th style="text-align: right; padding: 12px;">DPH (21%)</th><th style="text-align: right; padding: 12px;">Celkem</th></tr></thead><tbody><tr style="border-bottom: 1px solid #eee;"><td style="padding: 15px 12px;">Studiové služby a pronájem</td><td style="text-align: right; padding: 15px 12px;">${inv.amount} Kč</td><td style="text-align: right; padding: 15px 12px;">${dph} Kč</td><td style="text-align: right; padding: 15px 12px; font-weight: bold;">${total} Kč</td></tr></tbody></table><div style="margin-top: 50px; text-align: right;"><h3 style="margin: 0;">K úhradě celkem:</h3><p style="font-size: 1.8em; font-weight: bold; color: #000; margin: 5px 0 0 0;">${total} Kč</p></div><div style="margin-top: 80px; font-size: 0.8em; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">Vystaveno automatizovaným systémem DEPO Studio.</div></div>`; const container = document.getElementById('pdf-template'); container.innerHTML = htmlContent; html2pdf().set({ margin: 0, filename: `Faktura_${inv.client.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(container.children[0]).save(); }
 
-        // Automatické přihlášení z mezipaměti telefonu
-        window.addEventListener('load', () => {
-            const savedUser = localStorage.getItem('depo_user');
-            if (savedUser) startApp();
+        window.addEventListener('load', async () => {
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                const savedUser = localStorage.getItem('depo_user');
+                if (savedUser) { startApp(); }
+                else { document.getElementById('login-screen').style.display = 'flex'; }
+            }
         });
     </script>
 </body>
