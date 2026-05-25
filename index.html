@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DEPO Studio – Booking & Finance</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --bg-base: #050505; --bg-card: rgba(20, 20, 20, 0.85); --backdrop-blur: blur(24px);
@@ -16,8 +17,6 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        /* Ochrana šířky - odstraněno 100vw, nahrazeno 100% */
         body { background: var(--bg-base); color: var(--color-text); font-family: var(--font-family); line-height: 1.5; padding-bottom: 6rem; -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden; width: 100%; }
 
         /* ZÁMEK A SPLASH */
@@ -60,23 +59,24 @@
         .item-title { font-size: 0.95rem; font-weight: 600; color: #ffffff; white-space: normal; word-break: break-word; margin: 0; text-align: left; }
         .item-sub { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px; }
         .item-amount { font-weight: 700; font-size: 1rem; text-align: right; white-space: nowrap; flex-shrink: 0; }
+        .actions-group { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 
         /* TLAČÍTKA A FORMULÁŘE */
         .btn-add { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 0.95rem; padding: 1rem; border-radius: 0.75rem; border: none; cursor: pointer; margin-top: 0.5rem; text-align: center; }
         .btn-add:active { transform: scale(0.98); }
         .btn-rent { background: rgba(255,255,255,0.05); color: #fff; border: var(--border-glass); margin-bottom: 1.5rem; }
         .btn-back { background: transparent; color: #888; border: var(--border-glass); margin-bottom: 1rem; font-size: 0.8rem; }
-        .btn-half { flex: 1; min-width: 0; margin-top: 0; font-size: 0.8rem; padding: 0.7rem; } /* Přidáno min-width: 0 pro ochranu proti přetečení */
+        .btn-half { flex: 1; min-width: 0; margin-top: 0; font-size: 0.8rem; padding: 0.7rem; } 
         
-        /* Ochrana proti iOS Safari Zoomování - font-size pevně na 16px */
-        input, select { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: 0.75rem; padding: 0.9rem; color: #fff; font-size: 16px; margin-bottom: 0.75rem; box-sizing: border-box; }
-        input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--color-blue); margin-right: 10px; flex-shrink: 0; }
+        input, select, textarea { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: 0.75rem; padding: 0.9rem; color: #fff; font-size: 16px; margin-bottom: 0.75rem; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 80px; font-family: var(--font-family); }
+        input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--color-blue); margin-right: 8px; flex-shrink: 0; }
         
-        .checkbox-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; width: 100%; }
-        .checkbox-label { display: flex; align-items: center; font-size: 0.9rem; font-weight: 600; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border: var(--border-glass); cursor: pointer; flex: 1; min-width: 80px; justify-content: center; }
+        .checkbox-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; width: 100%; }
+        .checkbox-label { display: flex; align-items: center; font-size: 0.85rem; font-weight: 600; background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 8px; border: var(--border-glass); cursor: pointer; flex: 1; min-width: 80px; justify-content: center; }
         
         .form-row { display: flex; gap: 0.5rem; width: 100%; }
-        .form-row > * { flex: 1; min-width: 0; } /* Ochrana pro inputy vedle sebe */
+        .form-row > * { flex: 1; min-width: 0; }
 
         .rent-circle { width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--color-green); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: 700; }
         .rent-circle.unpaid { border-color: var(--color-red); }
@@ -119,14 +119,17 @@
 
         <div id="view-booking">
             <div style="display:flex; gap:0.5rem; margin-bottom: 1rem; width: 100%;">
-                <button class="btn-add btn-half" onclick="toggleCalManage('shifts')">Nastavit moje směny</button>
+                <button class="btn-add btn-half" onclick="toggleCalManage('shifts')">Nastavit moje volno</button>
                 <button class="btn-add btn-half" style="background:rgba(255,69,58,0.1); color:#ff453a; border:1px solid rgba(255,69,58,0.3);" onclick="toggleCalManage('away')">Nahlásit nepřítomnost</button>
             </div>
 
             <div id="manage-shifts" class="card hidden">
-                <h2 class="card-title">Kdy máš volno na studio?</h2>
-                <input type="date" id="shift-date">
-                <button class="btn-add" onclick="addAvailableDay()">Označit jako volný den</button>
+                <h2 class="card-title">Kdy má Jenda volno na studio?</h2>
+                <div class="form-row">
+                    <input type="date" id="shift-date-from" placeholder="Od">
+                    <input type="date" id="shift-date-to" placeholder="Do (nepovinné)">
+                </div>
+                <button class="btn-add" onclick="addAvailableDaysRange()">Označit tyto dny jako volné</button>
                 <div id="shifts-list" style="margin-top:1rem; border-top: var(--border-glass); padding-top: 1rem;"></div>
             </div>
 
@@ -142,7 +145,7 @@
                 <div class="card">
                     <h2 class="card-title">1. Vyber datum</h2>
                     <input type="date" id="booking-date" onchange="handleDateSelection()">
-                    <p id="availability-warning" style="color: var(--color-red); font-size: 0.85rem; font-weight: 600; margin-top: 10px; display: none; text-align: center;"></p>
+                    <p id="availability-warning" style="font-size: 0.85rem; font-weight: 600; margin-top: 10px; display: none; text-align: center; border-radius: 5px; padding: 5px; background: rgba(255,255,255,0.05); border: var(--border-glass);"></p>
                 </div>
                 
                 <div class="card" id="card-timeblocks" style="display:none;">
@@ -152,7 +155,7 @@
                 </div>
 
                 <div id="booking-details" class="card hidden">
-                    <h2 class="card-title">3. Detaily a posádka</h2>
+                    <h2 class="card-title">3. Detaily Session</h2>
                     <input type="text" id="client-name" placeholder="Jméno nebo Projekt">
                     <input type="tel" id="client-phone" placeholder="Telefon (nepovinné)">
                     
@@ -163,7 +166,17 @@
                         <label class="checkbox-label"><input type="checkbox" id="crew-dominik" value="Dominik"> Dominik</label>
                     </div>
 
-                    <button onclick="submitBooking()" class="btn-add">Potvrdit Session</button>
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 8px; margin-top: 10px;">Jaké služby se budou dělat?</p>
+                    <div class="checkbox-container">
+                        <label class="checkbox-label" style="background: rgba(10,132,255,0.1); border-color: rgba(10,132,255,0.3);"><input type="checkbox" id="srv-rec" value="Nahrávání"> REC</label>
+                        <label class="checkbox-label" style="background: rgba(255,214,10,0.1); border-color: rgba(255,214,10,0.3);"><input type="checkbox" id="srv-mix" value="Mix"> MIX</label>
+                        <label class="checkbox-label" style="background: rgba(50,215,75,0.1); border-color: rgba(50,215,75,0.3);"><input type="checkbox" id="srv-master" value="Master"> MASTER</label>
+                    </div>
+
+                    <textarea id="client-notes" placeholder="Poznámky k session..."></textarea>
+
+                    <button id="btn-submit-booking" onclick="submitBooking()" class="btn-add">Potvrdit Session</button>
+                    <button id="btn-cancel-edit" onclick="cancelEditBooking()" class="btn-add hidden" style="background:transparent; color:#fff; border:var(--border-glass); margin-top: 5px;">Zrušit úpravy</button>
                 </div>
                 
                 <div class="card">
@@ -270,7 +283,7 @@
                 <div class="form-row"><input type="number" id="inv-amount" placeholder="Cena BEZ DPH"><select id="inv-type"><option value="Faktura">Na Fakturu</option><option value="Hotově">Hotově</option></select></div>
                 <button class="btn-add" onclick="addInvoice()">Uložit příjmy</button>
             </div>
-            <div class="card"><h2 class="card-title">Historie Fakturací</h2><div id="invoices-list"></div></div>
+            <div class="card"><h2 class="card-title">Historie Fakturací a Export</h2><div id="invoices-list"></div></div>
         </div>
 
         <div id="view-todos" class="hidden">
@@ -304,6 +317,8 @@
         </div>
     </div>
 
+    <div id="pdf-template" style="display:none; position: absolute; left: -9999px;"></div>
+
     <script>
         const supabaseUrl = 'https://woyyoirqflacdddxziwv.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
@@ -312,9 +327,9 @@
         let data = { purchases: [], invoices: [], rentPaid: {}, bookings: [], todos: [], availableDays: [], awayPeriods: [] };
         const OPERATING_HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
         let selectedHours = []; let currentTodoFilter = 'active';
+        let editingBookingId = null;
 
         // --- MATEMATICKÝ ZÁKLAD DLE TVÉHO ZADÁNÍ ---
-        // Vybavení (Záporné = Přeplatek/Investoval. Kladné = Dluží do studia)
         const baselineEquipDebt = { Jenda: -46440, Maty: -2270, Dominik: 11366, Nikolas: 20127, Filip: 13397 };
 
         const icons = {
@@ -353,17 +368,16 @@
                 db.from('todos').select('*').order('id', { ascending: false }),
                 db.from('available_days').select('*'),
                 db.from('away_periods').select('*'),
-                db.from('studio_bank').select('balance').eq('id', 1).single() // Načte bank
+                db.from('studio_bank').select('balance').eq('id', 1).single()
             ]);
             
             if(pReq.data) data.purchases = pReq.data.map(p => ({ id: p.id, name: p.name, amount: p.amount, icon: p.icon, paidBy: p.paid_by, split: p.split }));
             if(iReq.data) data.invoices = iReq.data.map(i => ({ id: i.id, client: i.client, rec: i.rec, mix: i.mix, amount: i.amount, type: i.type }));
-            if(bReq.data) data.bookings = bReq.data.map(b => ({ id: b.id, date: b.date, from: b.start_hour, to: b.end_hour, name: b.name, phone: b.phone, crew: b.crew || '' }));
+            if(bReq.data) data.bookings = bReq.data.map(b => ({ id: b.id, date: b.date, from: b.start_hour, to: b.end_hour, name: b.name, phone: b.phone, crew: b.crew || '', services: b.services || '', notes: b.notes || '' }));
             if(tReq.data) data.todos = tReq.data;
             if(aDaysReq.data) data.availableDays = aDaysReq.data;
             if(aPerReq.data) data.awayPeriods = aPerReq.data;
             
-            // Nastavení Banku (Pokud neexistuje tabulka, nechá tam 3818 jako fallback)
             if(bankReq.data) { document.getElementById('bank-val').innerText = bankReq.data.balance; }
 
             const currentMonth = new Date().getMonth() + 1;
@@ -379,7 +393,7 @@
             if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
                 document.getElementById('bank-val').innerText = newVal;
                 const { error } = await db.from('studio_bank').upsert({ id: 1, balance: parseFloat(newVal) });
-                if(error) alert("Chyba uložení do cloudu. Ujisti se, že máš vytvořenou tabulku studio_bank (viz návod).");
+                if(error) alert("Chyba uložení do cloudu.");
             }
         }
 
@@ -417,39 +431,29 @@
         }
 
         function updateUI() {
-            // Bezpečné stažení pevného základu
+            // Finance Zůstatky
             let debts = { ...baselineEquipDebt };
-
             document.getElementById('purchases-list').innerHTML = '';
             if(data.purchases.length === 0) document.getElementById('purchases-list').innerHTML = '<div style="text-align:center; color:#888;">Žádné nové výdaje</div>';
             
             data.purchases.forEach((p, idx) => {
                 let iconSVG = icons[p.icon] || icons.other; 
-                let splitMap = { 'all': 'Rozdělit na 5 lidí', 'core': 'Rozdělit na 3 lidi', 'vklad': 'Nerozdělovat (Vklad)' };
-                
+                let splitMap = { 'all': 'Rozdělit na 5', 'core': 'Rozdělit na 3', 'vklad': 'Nerozdělovat (Vklad)' };
                 document.getElementById('purchases-list').innerHTML += `<div class="list-item"><div class="item-icon">${iconSVG}</div><div class="item-info"><p class="item-title">${p.name}</p><p class="item-sub">${p.paidBy} • ${splitMap[p.split] || 'Nerozdělovat'}</p></div><div style="text-align: right;"><p class="item-amount" style="color:var(--color-accent);">${Math.round(p.amount)} Kč</p><button onclick="delData('purchases', ${idx})" style="background:none; border:none; color:var(--color-text-muted); font-size:0.75rem; text-decoration:underline; cursor:pointer;">Smazat</button></div></div>`;
                 
-                // Matematika přičítání
                 if (p.split === 'all' || p.split === 'core') {
                     if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount; 
-                    
-                    if(p.split === 'all') { 
-                        let share = p.amount / 5;
-                        ['Jenda', 'Maty', 'Dominik', 'Nikolas', 'Filip'].forEach(n => debts[n] += share);
-                    } else if (p.split === 'core') { 
-                        let share = p.amount / 3;
-                        ['Jenda', 'Maty', 'Dominik'].forEach(n => debts[n] += share);
-                    }
+                    if(p.split === 'all') { let share = p.amount / 5; ['Jenda', 'Maty', 'Dominik', 'Nikolas', 'Filip'].forEach(n => debts[n] += share); } 
+                    else if (p.split === 'core') { let share = p.amount / 3; ['Jenda', 'Maty', 'Dominik'].forEach(n => debts[n] += share); }
                 }
             });
 
-            // Vykreslení zůstatků
             ['Jenda', 'Maty', 'Dominik', 'Nikolas', 'Filip'].forEach(name => { 
                 let diff = Math.round(debts[name]); let el = document.getElementById(`debt-${name.toLowerCase()}`); 
                 if(el) { el.innerText = Math.abs(diff) + " Kč"; el.className = 'balance-val ' + (diff > 0 ? 'val-pos' : (diff < 0 ? 'val-neg' : '')); if(diff === 0) el.style.color = 'var(--color-text)'; }
             });
 
-            // Úkoly s opravou obtékání a šířky
+            // Úkoly
             document.getElementById('todos-list').innerHTML = '';
             let filteredTodos = data.todos.filter(t => currentTodoFilter === 'done' ? t.is_done : !t.is_done);
             if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:#888;">Žádné položky</div>';
@@ -480,22 +484,124 @@
                 document.getElementById('away-list').innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; color:#fff;"><span>${a.person}: ${a.date_from} až ${a.date_to}</span> <button onclick="delData('away_periods', ${idx}, true)" style="background:none; border:none; color:var(--color-red); cursor:pointer;">Smazat</button></div>`;
             });
 
-            // Faktury & Nájem kruh
+            // Faktury & PDF Tlačítko
             document.getElementById('invoices-list').innerHTML = '';
-            data.invoices.forEach((i, idx) => { let totalWithDph = Math.round(i.amount * 1.21); document.getElementById('invoices-list').innerHTML += `<div class="list-item"><div class="item-icon" style="background: rgba(50,215,75,0.1);">${icons.other}</div><div class="item-info"><p class="item-title">${i.client} <span style="font-size:0.7rem; font-weight:400;">(${i.type})</span></p><p class="item-sub">Rec: ${i.rec}h • Mix: ${i.mix}h</p></div><div style="text-align: right;"><p class="item-amount">+ ${totalWithDph} Kč</p><button onclick="delData('invoices', ${idx})" style="background:none; border:none; color:var(--color-text-muted); font-size:0.75rem; text-decoration:underline; cursor:pointer;">Smazat</button></div></div>`; });
+            data.invoices.forEach((i, idx) => { 
+                let totalWithDph = Math.round(i.amount * 1.21); 
+                document.getElementById('invoices-list').innerHTML += `
+                <div class="list-item">
+                    <div class="item-icon" style="background: rgba(50,215,75,0.1);">${icons.other}</div>
+                    <div class="item-info">
+                        <p class="item-title">${i.client} <span style="font-size:0.7rem; font-weight:400;">(${i.type})</span></p>
+                        <p class="item-sub">Rec: ${i.rec}h • Mix: ${i.mix}h</p>
+                    </div>
+                    <div class="actions-group">
+                        <p class="item-amount" style="color:var(--color-green); margin:0;">+ ${totalWithDph} Kč</p>
+                        <button onclick="exportInvoicePDF(${idx})" style="background:rgba(10,132,255,0.1); border:1px solid rgba(10,132,255,0.3); color:#0a84ff; font-size:0.7rem; padding:4px 8px; border-radius:5px; cursor:pointer;">Stáhnout PDF</button>
+                        <button onclick="delData('invoices', ${idx})" style="background:none; border:none; color:var(--color-text-muted); font-size:0.7rem; text-decoration:underline; cursor:pointer;">Smazat</button>
+                    </div>
+                </div>`; 
+            });
 
+            // Nájem kruh
             let rentPaidCount = 0; if(data.rentPaid.Jenda) rentPaidCount++; if(data.rentPaid.Maty) rentPaidCount++; if(data.rentPaid.Dominik) rentPaidCount++;
             let rentCircle = document.getElementById('rent-status-circle'); let rentText = document.getElementById('rent-status-text');
             if(rentPaidCount === 3) { rentCircle.className = 'rent-circle'; rentCircle.style.borderColor = 'var(--color-green)'; rentCircle.innerText = '✓'; rentText.innerText = "Nájem zaplacen!"; } else { rentCircle.className = 'rent-circle unpaid'; rentCircle.innerText = `${rentPaidCount}/3`; rentText.innerText = "Čeká se na platby"; }
 
-            // Booking Seznam
+            // Booking Seznam (s tlačítkem Upravit)
             const bList = document.getElementById('admin-list'); bList.innerHTML = '';
             data.bookings.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach((b, idx) => { 
-                let crewText = b.crew ? `(Sestava: ${b.crew})` : '';
-                bList.innerHTML += `<div class="list-item"><div class="item-info"><p class="item-title">${b.date}</p><p class="item-sub">${b.from}:00 - ${b.to}:00 • ${b.name}</p><p class="item-sub" style="color:var(--color-blue);">${crewText}</p></div><button onclick="delData('bookings', ${idx})" style="background:none; border:none; color:var(--color-red); font-weight:bold; font-size:0.8rem; cursor:pointer;">Zrušit</button></div>`; 
+                let srvText = b.services ? ` • ${b.services}` : '';
+                let crewText = b.crew ? `<br><span style="color:var(--color-blue);">Sestava: ${b.crew}</span>` : '';
+                let noteText = b.notes ? `<br><span style="color:#aaa; font-style:italic;">Pozn: ${b.notes}</span>` : '';
+                
+                bList.innerHTML += `
+                <div class="list-item" style="align-items:flex-start;">
+                    <div class="item-info">
+                        <p class="item-title">${b.date}</p>
+                        <p class="item-sub">${b.from}:00 - ${b.to}:00 • <strong>${b.name}</strong>${srvText}${crewText}${noteText}</p>
+                    </div>
+                    <div class="actions-group">
+                        <button onclick="editBooking(${idx})" style="background:rgba(255,214,10,0.1); border:1px solid rgba(255,214,10,0.3); color:#ffd60a; font-size:0.7rem; padding:4px 8px; border-radius:5px; cursor:pointer;">Upravit</button>
+                        <button onclick="delData('bookings', ${idx})" style="background:none; border:none; color:var(--color-red); font-weight:bold; font-size:0.7rem; cursor:pointer;">Zrušit</button>
+                    </div>
+                </div>`; 
             });
         }
 
+        // --- EXPORT PDF FAKTURY ---
+        function exportInvoicePDF(idx) {
+            const inv = data.invoices[idx];
+            const total = Math.round(inv.amount * 1.21);
+            const dph = Math.round(inv.amount * 0.21);
+            
+            const htmlContent = `
+                <div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; background: #fff; width: 800px;">
+                    <div style="border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between;">
+                        <h1 style="margin: 0; color: #000;">FAKTURA</h1>
+                        <h2 style="margin: 0; color: #666;">DEPO Studio</h2>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+                        <div>
+                            <p style="margin: 0 0 5px 0;"><strong>Dodavatel:</strong></p>
+                            <p style="margin: 0;">DEPO Studio</p>
+                            <p style="margin: 0;">Pardubice</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0 0 5px 0;"><strong>Odběratel / Projekt:</strong></p>
+                            <p style="margin: 0; font-size: 1.2em; font-weight: bold;">${inv.client}</p>
+                        </div>
+                    </div>
+
+                    <p><strong>Typ platby:</strong> ${inv.type}</p>
+                    <p><strong>Detaily práce:</strong> Nahrávání ${inv.rec}h, Mix/Master ${inv.mix}h</p>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 30px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="text-align: left; padding: 12px;">Popis služby</th>
+                                <th style="text-align: right; padding: 12px;">Základ daně</th>
+                                <th style="text-align: right; padding: 12px;">DPH (21%)</th>
+                                <th style="text-align: right; padding: 12px;">Celkem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 15px 12px;">Studiové služby a pronájem</td>
+                                <td style="text-align: right; padding: 15px 12px;">${inv.amount} Kč</td>
+                                <td style="text-align: right; padding: 15px 12px;">${dph} Kč</td>
+                                <td style="text-align: right; padding: 15px 12px; font-weight: bold;">${total} Kč</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 50px; text-align: right;">
+                        <h3 style="margin: 0;">K úhradě celkem:</h3>
+                        <p style="font-size: 1.8em; font-weight: bold; color: #000; margin: 5px 0 0 0;">${total} Kč</p>
+                    </div>
+                    
+                    <div style="margin-top: 80px; font-size: 0.8em; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                        Vystaveno automatizovaným systémem DEPO Studio.
+                    </div>
+                </div>
+            `;
+
+            const container = document.getElementById('pdf-template');
+            container.innerHTML = htmlContent;
+            
+            const opt = {
+                margin: 0,
+                filename: `Faktura_${inv.client.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(container.children[0]).save();
+        }
+
+        // --- ZÁKLADNÍ CRUD FUNKCE ---
         async function addPurchase() {
             let name = document.getElementById('pur-name').value; let amount = parseFloat(document.getElementById('pur-amount').value); let icon = document.getElementById('pur-icon').value; let paidBy = document.getElementById('pur-paidBy').value; let split = document.getElementById('pur-split').value;
             if(!name || !amount || !paidBy) return;
@@ -534,11 +640,21 @@
             }
         }
 
-        // --- KALENDÁŘ ---
-        async function addAvailableDay() {
-            let d = document.getElementById('shift-date').value; if(!d) return;
-            const { error } = await db.from('available_days').insert([{ date: d }]);
-            if(!error) { document.getElementById('shift-date').value = ''; await loadAllData(); updateUI(); }
+        // --- ROZŠÍŘENÝ KALENDÁŘ ---
+        async function addAvailableDaysRange() {
+            let f = document.getElementById('shift-date-from').value;
+            let t = document.getElementById('shift-date-to').value;
+            if(!f) return alert("Vyber minimálně datum Od.");
+            if(!t) t = f; 
+            
+            let start = new Date(f); let end = new Date(t);
+            let datesToInsert = [];
+            while(start <= end) {
+                datesToInsert.push({ date: start.toISOString().split('T')[0] });
+                start.setDate(start.getDate() + 1);
+            }
+            const { error } = await db.from('available_days').insert(datesToInsert);
+            if(!error) { document.getElementById('shift-date-from').value = ''; document.getElementById('shift-date-to').value = ''; await loadAllData(); updateUI(); }
         }
 
         async function addAwayPeriod() {
@@ -555,62 +671,157 @@
             
             if (!dateVal) return; 
             selectedHours = []; 
-            document.getElementById('booking-details').classList.add('hidden'); 
             
-            const isAvailable = data.availableDays.some(d => d.date === dateVal);
-            if(!isAvailable) {
-                blocksCard.style.display = 'none';
-                warningEl.innerText = "❌ Tento den nemá Jenda volno na studio.";
-                warningEl.style.display = 'block';
-                return;
-            }
-
+            // Jenda volno logika
+            const isJendaFree = data.availableDays.some(d => d.date === dateVal);
+            // Nepřítomní
             let awayPeople = [];
             data.awayPeriods.forEach(a => { if(dateVal >= a.date_from && dateVal <= a.date_to) awayPeople.push(a.person); });
             
-            if(awayPeople.length > 0) {
-                warningEl.innerText = `⚠️ Pozor, v tento den je hlášena nepřítomnost: ${awayPeople.join(', ')}`;
-                warningEl.style.display = 'block';
-            } else {
-                warningEl.style.display = 'none';
-            }
+            let msg = `Tento den: Jenda ${isJendaFree ? 'MÁ VOLNO' : 'NEMÁ VOLNO'}. `;
+            if(awayPeople.length > 0) msg += `Pryč: ${awayPeople.join(', ')}.`;
+            else msg += `Ostatní maj volno.`;
 
+            warningEl.innerText = msg;
+            warningEl.style.color = (isJendaFree && awayPeople.length === 0) ? 'var(--color-green)' : 'var(--color-yellow)';
+            warningEl.style.display = 'block';
+            
+            // Ukázat bloky vždy, ať se může booknout Maty/Dominik
             blocksCard.style.display = 'block';
             renderBlocks(dateVal); 
+            
+            // Pokud needitujeme, schováme detaily dokud nejsou vybrány hodiny
+            if(!editingBookingId) document.getElementById('booking-details').classList.add('hidden'); 
         }
 
         function renderBlocks(selectedDate) {
             const grid = document.getElementById('blocks-grid'); const info = document.getElementById('selection-info'); grid.innerHTML = ""; info.innerText = "Vyber navazující bloky";
-            const dayBookings = data.bookings.filter(b => b.date === selectedDate);
+            const dayBookings = data.bookings.filter(b => b.date === selectedDate && b.id !== editingBookingId);
+            
             OPERATING_HOURS.forEach(hour => {
                 const btn = document.createElement('button'); btn.className = "time-block"; btn.innerText = hour + ":00"; let isBooked = false;
                 if (selectedDate) dayBookings.forEach(b => { if (hour >= b.from && hour < b.to) isBooked = true; });
-                if (!selectedDate) { btn.classList.add('dimmed'); btn.disabled = true; } else if (isBooked) { btn.classList.add('booked'); btn.disabled = true; } else { btn.onclick = () => toggleBlock(hour, btn); }
+                
+                if (!selectedDate) { btn.classList.add('dimmed'); btn.disabled = true; } 
+                else if (isBooked) { btn.classList.add('booked'); btn.disabled = true; } 
+                else { 
+                    if(selectedHours.includes(hour)) btn.classList.add('selected');
+                    btn.onclick = () => toggleBlock(hour, btn); 
+                }
                 grid.appendChild(btn);
             });
         }
-        function toggleBlock(hour, btnElement) { const index = selectedHours.indexOf(hour); if (index > -1) { selectedHours.splice(index, 1); btnElement.classList.remove('selected'); } else { selectedHours.push(hour); btnElement.classList.add('selected'); } selectedHours.sort((a, b) => a - b); updateSelectionInfo(); }
+
+        function toggleBlock(hour, btnElement) { 
+            const index = selectedHours.indexOf(hour); 
+            if (index > -1) { selectedHours.splice(index, 1); btnElement.classList.remove('selected'); } 
+            else { selectedHours.push(hour); btnElement.classList.add('selected'); } 
+            selectedHours.sort((a, b) => a - b); 
+            updateSelectionInfo(); 
+        }
+
         function updateSelectionInfo() {
             const info = document.getElementById('selection-info'); const detailsForm = document.getElementById('booking-details');
-            if (selectedHours.length === 0) { info.innerText = "Vyber bloky"; detailsForm.classList.add('hidden'); return; }
+            if (selectedHours.length === 0) { info.innerText = "Vyber bloky"; if(!editingBookingId) detailsForm.classList.add('hidden'); return; }
             let isContinuous = true; for (let i = 0; i < selectedHours.length - 1; i++) { if (selectedHours[i + 1] - selectedHours[i] !== 1) { isContinuous = false; break; } }
-            if (!isContinuous) { info.innerText = "⚠️ Bloky musí navazovat"; info.style.color = "var(--color-red)"; detailsForm.classList.add('hidden'); }
-            else { const startHour = selectedHours[0]; const endHour = selectedHours[selectedHours.length - 1] + 1; info.innerText = `${startHour}:00 - ${endHour}:00 (${selectedHours.length} h)`; info.style.color = "var(--color-green)"; detailsForm.classList.remove('hidden'); }
+            if (!isContinuous) { info.innerText = "⚠️ Bloky musí navazovat"; info.style.color = "var(--color-red)"; if(!editingBookingId) detailsForm.classList.add('hidden'); }
+            else { 
+                const startHour = selectedHours[0]; const endHour = selectedHours[selectedHours.length - 1] + 1; 
+                info.innerText = `${startHour}:00 - ${endHour}:00 (${selectedHours.length} h)`; info.style.color = "var(--color-green)"; 
+                detailsForm.classList.remove('hidden'); 
+            }
+        }
+
+        // --- EDITACE REZERVACÍ ---
+        function editBooking(idx) {
+            const b = data.bookings[idx];
+            editingBookingId = b.id;
+            
+            document.getElementById('booking-date').value = b.date;
+            
+            // Vyplnit časy
+            selectedHours = [];
+            for(let h = b.from; h < b.to; h++) selectedHours.push(h);
+            
+            handleDateSelection(); // Vykreslí bloky s označenými selectedHours
+            updateSelectionInfo();
+            
+            document.getElementById('client-name').value = b.name;
+            document.getElementById('client-phone').value = b.phone || '';
+            document.getElementById('client-notes').value = b.notes || '';
+            
+            document.getElementById('crew-jenda').checked = b.crew.includes('Jenda');
+            document.getElementById('crew-maty').checked = b.crew.includes('Maty');
+            document.getElementById('crew-dominik').checked = b.crew.includes('Dominik');
+
+            const srv = b.services || '';
+            document.getElementById('srv-rec').checked = srv.includes('Nahrávání');
+            document.getElementById('srv-mix').checked = srv.includes('Mix');
+            document.getElementById('srv-master').checked = srv.includes('Master');
+
+            document.getElementById('btn-submit-booking').innerText = "Uložit změny v rezervaci";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            document.getElementById('booking-details').classList.remove('hidden');
+            
+            // Scroll nahoru
+            document.getElementById('view-booking').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEditBooking() {
+            editingBookingId = null;
+            document.getElementById('booking-date').value = '';
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('client-notes').value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            selectedHours = [];
+            
+            document.getElementById('btn-submit-booking').innerText = "Potvrdit Session";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+            document.getElementById('availability-warning').style.display = 'none';
+            document.getElementById('card-timeblocks').style.display = 'none';
+            document.getElementById('booking-details').classList.add('hidden');
         }
 
         async function submitBooking() {
             const date = document.getElementById('booking-date').value; const name = document.getElementById('client-name').value.trim(); const phone = document.getElementById('client-phone').value.trim();
+            const notes = document.getElementById('client-notes').value.trim();
             if (!name) return alert("Doplň jméno projektu/klienta."); 
+            if (selectedHours.length === 0) return alert("Vyberte časové bloky.");
             
             let crew = [];
             if(document.getElementById('crew-jenda').checked) crew.push('Jenda');
             if(document.getElementById('crew-maty').checked) crew.push('Maty');
             if(document.getElementById('crew-dominik').checked) crew.push('Dominik');
-            let crewString = crew.join(', ');
+            
+            let srv = [];
+            if(document.getElementById('srv-rec').checked) srv.push('Nahrávání');
+            if(document.getElementById('srv-mix').checked) srv.push('Mix');
+            if(document.getElementById('srv-master').checked) srv.push('Master');
 
             const startHour = selectedHours[0]; const endHour = selectedHours[selectedHours.length - 1] + 1;
-            const { error } = await db.from('bookings').insert([{ date: date, start_hour: startHour, end_hour: endHour, name: name, phone: phone, crew: crewString }]);
-            if(!error) { document.getElementById('client-name').value = ""; document.getElementById('client-phone').value = ""; document.getElementById('booking-date').value = ""; document.getElementById('crew-jenda').checked=false; document.getElementById('crew-maty').checked=false; document.getElementById('crew-dominik').checked=false; selectedHours = []; document.getElementById('booking-details').classList.add('hidden'); toggleCalManage('none'); await loadAllData(); updateUI(); alert("Zabukováno!"); }
+            
+            const payload = { 
+                date: date, start_hour: startHour, end_hour: endHour, name: name, 
+                phone: phone, crew: crew.join(', '), services: srv.join(', '), notes: notes 
+            };
+
+            let error;
+            if(editingBookingId) {
+                const res = await db.from('bookings').update(payload).eq('id', editingBookingId);
+                error = res.error;
+            } else {
+                const res = await db.from('bookings').insert([payload]);
+                error = res.error;
+            }
+
+            if(!error) { 
+                cancelEditBooking();
+                await loadAllData(); updateUI(); 
+                alert("Rezervace uložena!"); 
+            } else {
+                alert("Chyba: Zkontroluj jestli jsi přidal sloupce services a notes do databáze v Supabase (SQL).");
+            }
         }
 
         window.addEventListener('load', checkLockStatus);
