@@ -50,24 +50,18 @@
         #login-screen, #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #splash-screen { z-index: 9999; display: none; transition: opacity 0.4s ease-out; }
         #login-screen h1, #splash-screen h1 { color: #fff; font-size: 3rem; font-weight: 900; letter-spacing: 0.05em; margin-bottom: 10px; }
-        .login-select, #login-password { width: 80%; max-width: 300px; padding: 16px; border-radius: var(--radius-input); border: var(--border-glass); outline: none; background: var(--bg-input); color: #fff; text-align: center; margin-bottom: 15px; font-size: 16px; }
+        .login-select, #login-password { width: 80%; max-width: 300px; padding: 15px; border-radius: var(--radius-input); border: var(--border-glass); outline: none; background: var(--bg-input); color: #fff; text-align: center; margin-bottom: 15px; font-size: 16px; }
         .login-select { appearance: none; cursor: pointer; }
         #login-password:focus, .login-select:focus { border-color: var(--color-accent); }
         .btn-login { width: 80%; max-width: 300px; padding: 16px; background: #fff; color: #000; font-weight: 700; border-radius: var(--radius-input); border: none; cursor: pointer; transition: transform 0.1s; }
         .btn-login:active { transform: scale(0.97); }
 
-        /* ROZVRŽENÍ A HLAVIČKA */
+        /* ROZVRŽENÍ */
         .container { width: 100%; max-width: 440px; margin: 0 auto; padding: 1.5rem 1rem; display: none; overflow-x: hidden; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; }
         .app-title { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: 0.02em; }
         .app-subtitle { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-top: 4px; }
         
-        /* MAC-OS STYLE LIVE PRESENCE */
-        .presence-container { display: flex; gap: 8px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 20px; border: var(--border-glass); backdrop-filter: blur(10px); }
-        .presence-dot { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; transition: all 0.4s ease; border: 1px solid rgba(255,255,255,0.05); }
-        .presence-dot.online { background: var(--color-green); color: #000; box-shadow: 0 0 12px rgba(48,209,88,0.5); border-color: var(--color-green); }
-
-        /* PREMIUM GLASS KARTY */
         .card { width: 100%; background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: var(--border-glass); border-radius: var(--radius-card); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box; }
         .card-title { font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 1.2rem; letter-spacing: 0.05em; }
 
@@ -84,6 +78,11 @@
         .cal-day.booked { background: rgba(48,209,88,0.15); border-color: rgba(48,209,88,0.3); color: var(--color-green); }
         .cal-day:active { transform: scale(0.92); }
         .cal-day.active { background: #fff; color: #000; font-weight: 700; box-shadow: 0 4px 12px rgba(255,255,255,0.2); border-color: #fff; }
+
+        /* MAC-OS STYLE LIVE PRESENCE */
+        .presence-container { display: flex; gap: 8px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 20px; border: var(--border-glass); backdrop-filter: blur(10px); }
+        .presence-dot { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; transition: all 0.4s ease; border: 1px solid rgba(255,255,255,0.05); }
+        .presence-dot.online { background: var(--color-green); color: #000; box-shadow: 0 0 12px rgba(48,209,88,0.5); border-color: var(--color-green); }
 
         /* OSTRŮVKOVÁ NAVIGACE (Pill Design) */
         .bottom-nav { 
@@ -130,7 +129,8 @@
         /* REFORMOVANÝ SLEEK TO-DO LIST */
         .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
         .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
-        .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; word-break: normal; flex: 1; }
+        .todo-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+        .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; width: 100%; overflow-wrap: anywhere; word-break: normal; flex: 1; }
         .todo-done-text { text-decoration: line-through; opacity: 0.4; color: var(--color-text-muted) !important; }
         .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; }
         .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
@@ -255,7 +255,7 @@
 
         <div id="view-finance" class="hidden">
             <div id="finance-main">
-                <button class="btn-add" style="background:var(--bg-input); color:#fff; border:var(--border-glass); margin-bottom:1.5rem;" onclick="toggleRentView(true)">
+                <button class="btn-add btn-rent" onclick="toggleRentView(true)">
                     <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:currentColor; vertical-align:middle; margin-right:5px;"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                     Zobrazit Měsíční nájem
                 </button>
@@ -310,7 +310,7 @@
             </div>
 
             <div id="finance-rent" class="hidden">
-                <button class="btn-add" style="background:transparent; color:var(--color-text-muted); border:var(--border-glass); margin-bottom:1.5rem;" onclick="toggleRentView(false)">← Zpět na přehled</button>
+                <button class="btn-add btn-back" onclick="toggleRentView(false)">← Zpět na přehled</button>
                 <div class="card">
                     <h2 class="card-title">Historické nájemné</h2>
                     <div class="balance-grid">
@@ -397,29 +397,32 @@
 
         const baselineEquipDebt = { Jenda: -46440, Maty: -2270, Dominik: 11366, Nikolas: 20127, Filip: 13397 };
 
-        document.getElementById('today-date').innerText = new Date().toLocaleDateString('cs-CZ');
-
+        // --- AUTENTIKACE S MIÉSTNÍM KÓDEM ---
         async function verifyPassword() {
             const userSelect = document.getElementById('login-user').value;
             const input = document.getElementById('login-password').value;
             if(!userSelect) return alert("Vyber prosím svoje jméno!");
+            if(!input) return alert("Zadej prístupový kód štúdia!");
             
             const btn = document.getElementById('btn-submit'); btn.innerText = "Ověřuji...";
-            const { error } = await db.auth.signInWithPassword({ email: 'jan.lichy.w@gmail.com', password: input });
             
-            if (error) { alert("Zámek: " + error.message); document.getElementById('login-password').value = ""; btn.innerText = "ODEMKNOUT"; } 
-            else { localStorage.setItem('depo_user', userSelect); location.reload(); }
+            // Miestny overovací kód nezávislý na chybách Supabase Auth
+            if(input.toLowerCase() === 'depo') {
+                localStorage.setItem('depo_user', userSelect);
+                startApp();
+            } else {
+                alert("Nesprávný přístupový kód štúdia!");
+                document.getElementById('login-password').value = "";
+                btn.innerText = "ODEMKNOUT";
+            }
         }
 
         async function startApp() {
-            loggedUser = localStorage.getItem('depo_user');
-            if(!loggedUser) { db.auth.signOut(); location.reload(); return; }
-
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             
             await loadAllData(); 
-            renderCalendar(); // Oprava: Vynucené načtení hned na startu
+            renderCalendar(); 
             updateUI(); 
             
             pingPresence();
@@ -513,7 +516,7 @@
         }
 
         function updateUI() {
-            // RESPONZIVNÍ VÝPOČTY DLUHŮ
+            // FINANČNÍ VÝPOČTY
             let debts = { ...baselineEquipDebt };
             document.getElementById('purchases-list').innerHTML = '';
             
@@ -528,7 +531,7 @@
                     if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount;
                     let share = p.amount / 3; ['Jenda', 'Maty', 'Dominik'].forEach(n => debts[n] += share);
                 } else if (p.split === 'vklad') {
-                    if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount; // Vklad sníží dluh
+                    if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount; 
                 }
             });
 
@@ -537,10 +540,10 @@
                 if(el) { el.innerText = Math.abs(diff) + " Kč"; el.className = 'balance-val ' + (diff > 0 ? 'val-pos' : (diff < 0 ? 'val-neg' : '')); if(diff === 0) el.style.color = 'var(--color-text)'; }
             });
 
-            // RENDERING FIXNUTÉHO TO-DO LISTU S BAROU
+            // RENDERING FIXNUTÉHO TO-DO LISTU S PROGRESS BAREM
             document.getElementById('todos-list').innerHTML = '';
             let filteredTodos = data.todos.filter(t => currentTodoFilter === 'done' ? t.is_done : !t.is_done);
-            if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding: 10px;">Žádné úkoly</div>';
+            if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding: 10px;">Žádné úkoly k zobrazení</div>';
             
             filteredTodos.forEach(t => {
                 let idx = data.todos.findIndex(dt => dt.id === t.id);
@@ -554,7 +557,7 @@
                 </div>`;
             });
 
-            // Aktualizace status baru
+            // Matematika indikátoru pokroku
             let totalTodos = data.todos.length;
             let doneTodos = data.todos.filter(t => t.is_done).length;
             let pct = totalTodos > 0 ? Math.round((doneTodos / totalTodos) * 100) : 0;
@@ -638,7 +641,7 @@
             const startHour = selectedHours[0]; const endHour = selectedHours[selectedHours.length - 1] + 1;
             const payload = { date: date, start_hour: startHour, end_hour: endHour, name: name, phone: phone, crew: crew.join(', '), services: srv.join(', '), notes: notes };
             let error; if(editingBookingId) { const res = await db.from('bookings').update(payload).eq('id', editingBookingId); error = res.error; } else { const res = await db.from('bookings').insert([payload]); error = res.error; }
-            if(!error) { cancelEditBooking(); await loadAllData(); renderCalendar(); updateUI(); alert("Uloženo!"); } else alert("Chyba: " + error.message);
+            if(!error) { cancelEditBooking(); await loadAllData(); renderCalendar(); updateUI(); alert("Uložit do cloudu hotovo!"); } else alert("Chyba: " + error.message);
         }
 
         async function addAvailableDaysRange() {
@@ -662,7 +665,7 @@
         async function payRent(person) { let isPaid = data.rentPaid[person]; if(isPaid) { if(!confirm(`Zrušit platbu pro osobu ${person}?`)) return; isPaid = false; } else { isPaid = true; } let updateObj = {}; if (person === 'Jenda') updateObj.jenda_paid = isPaid; if (person === 'Maty') updateObj.maty_paid = isPaid; if (person === 'Dominik') updateObj.dominik_paid = isPaid; await db.from('rent').update(updateObj).eq('id', data.rentPaid.id); await loadAllData(); updateUI(); }
         
         async function delData(type, index, isArrayIdx = false) { 
-            if(confirm("Opravdu smazat?")) { 
+            if(confirm("Opravdu smazat z cloudu?")) { 
                 let item = (type === 'available_days') ? data.availableDays[index] : (type === 'away_periods' ? data.awayPeriods[index] : data[type][index]); 
                 if(item && item.id) { await db.from(type).delete().eq('id', item.id); await loadAllData(); if(type==='available_days' || type==='away_periods' || type==='bookings') renderCalendar(); updateUI(); } 
             } 
@@ -671,7 +674,11 @@
         function toggleRentView(v) { if(v) { document.getElementById('finance-main').classList.add('hidden'); document.getElementById('finance-rent').classList.remove('hidden'); } else { document.getElementById('finance-main').classList.remove('hidden'); document.getElementById('finance-rent').classList.add('hidden'); } }
         function exportInvoicePDF(idx) { const inv = data.invoices[idx]; const total = Math.round(inv.amount * 1.21); const dph = Math.round(inv.amount * 0.21); const htmlContent = `<div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; background: #fff; width: 800px;"><div style="border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between;"><h1 style="margin: 0; color: #000;">FAKTURA</h1><h2 style="margin: 0; color: #666;">DEPO Studio</h2></div><div style="display: flex; justify-content: space-between; margin-bottom: 40px;"><div><p style="margin: 0 0 5px 0;"><strong>Dodavatel:</strong></p><p style="margin: 0;">DEPO Studio</p><p style="margin: 0;">Pardubice</p></div><div style="text-align: right;"><p style="margin: 0 0 5px 0;"><strong>Odběratel / Projekt:</strong></p><p style="margin: 0; font-size: 1.2em; font-weight: bold;">${inv.client}</p></div></div><p><strong>Typ platby:</strong> ${inv.type}</p><p><strong>Detaily práce:</strong> Nahrávání ${inv.rec}h, Mix/Master ${inv.mix}h</p><table style="width: 100%; border-collapse: collapse; margin-top: 30px;"><thead><tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;"><th style="text-align: left; padding: 12px;">Popis služby</th><th style="text-align: right; padding: 12px;">Základ daně</th><th style="text-align: right; padding: 12px;">DPH (21%)</th><th style="text-align: right; padding: 12px;">Celkem</th></tr></thead><tbody><tr style="border-bottom: 1px solid #eee;"><td style="padding: 15px 12px;">Studiové služby a pronájem</td><td style="text-align: right; padding: 15px 12px;">${inv.amount} Kč</td><td style="text-align: right; padding: 15px 12px;">${dph} Kč</td><td style="text-align: right; padding: 15px 12px; font-weight: bold;">${total} Kč</td></tr></tbody></table><div style="margin-top: 50px; text-align: right;"><h3 style="margin: 0;">K úhradě celkem:</h3><p style="font-size: 1.8em; font-weight: bold; color: #000; margin: 5px 0 0 0;">${total} Kč</p></div><div style="margin-top: 80px; font-size: 0.8em; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">Vystaveno automatizovaným systémem DEPO Studio.</div></div>`; const container = document.getElementById('pdf-template'); container.innerHTML = htmlContent; html2pdf().set({ margin: 0, filename: `Faktura_${inv.client.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(container.children[0]).save(); }
 
-        window.addEventListener('load', checkLockStatus);
+        // Automatické přihlášení, pokud už uživatel dříve zvolil jméno
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('depo_user');
+            if (savedUser) { startApp(); }
+        });
     </script>
 </body>
 </html>
