@@ -62,7 +62,7 @@
         .app-title { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: 0.02em; }
         .app-subtitle { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-top: 4px; }
         
-        .card { width: 100%; background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: var(--border-glass); border-radius: var(--radius-card); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box; }
+        .card { width: 100%; background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: var(--border-glass); border-radius: var(--radius-card); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box; overflow: hidden; }
         .card-title { font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 1.2rem; letter-spacing: 0.05em; }
 
         /* INTERAKTIVNÍ KALENDÁŘ */
@@ -97,9 +97,14 @@
         .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--color-accent); }
         .nav-item.active svg { transform: translateY(-2px); }
 
-        /* INPUTY A FORMULÁŘE */
-        input:not([type="checkbox"]), select, textarea { width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; }
-        input:focus, select:focus, textarea:focus { border: var(--border-highlight); background: rgba(255,255,255,0.08); outline: none; }
+        /* OPRAVENÉ INPUTY A FORMULÁŘE (Izolace od checkboxů) */
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], select, textarea { 
+            width: 100%; max-width: 100%; background: var(--bg-input); border: var(--border-glass); border-radius: var(--radius-input); 
+            padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 12px; font-family: var(--font-family); transition: all 0.3s ease; 
+        }
+        input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="tel"]:focus, select:focus, textarea:focus { 
+            border: var(--border-highlight); background: rgba(255,255,255,0.08); outline: none; 
+        }
         textarea { resize: vertical; min-height: 100px; }
 
         .btn-add { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 0.95rem; padding: 16px; border-radius: var(--radius-input); border: none; cursor: pointer; margin-top: 5px; text-align: center; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
@@ -108,16 +113,17 @@
         .form-row > * { flex: 1; min-width: 0; }
         .btn-half { flex: 1; font-size: 0.85rem; padding: 12px; margin-top: 0; box-shadow: none; }
 
+        /* Běžné čtvercové checkboxy v Booking formuláři */
         .checkbox-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; width: 100%; }
         .checkbox-label { display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; background: var(--bg-input); padding: 12px 14px; border-radius: 12px; border: var(--border-glass); cursor: pointer; flex: 1; min-width: 80px; transition: all 0.2s; }
         .checkbox-label input[type="checkbox"] { 
             width: 18px !important; height: 18px !important; margin: 0 8px 0 0 !important; 
-            accent-color: var(--color-blue); flex-shrink: 0; 
+            accent-color: var(--color-blue); flex-shrink: 0; cursor: pointer;
         }
 
         /* ČASOVÉ BLOKY */
         .blocks-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 1rem; width: 100%; box-sizing: border-box; overflow: hidden; }
-        .time-block { background: var(--bg-input); border: var(--border-glass); padding: 12px 0; border-radius: 12px; font-size: 0.95rem; font-weight: 600; text-align: center; cursor: pointer; width: 100%; box-sizing: border-box; }
+        .time-block { background: var(--bg-input); border: var(--border-glass); padding: 12px 0; border-radius: 12px; font-size: 0.95rem; font-weight: 600; text-align: center; cursor: pointer; width: 100%; box-sizing: border-box; overflow: hidden; }
         .time-block.dimmed { opacity: 0.3; cursor: not-allowed; border-color: transparent; }
         .time-block.booked { opacity: 1; background: rgba(255,69,58,0.18); border: 1px solid rgba(255,69,58,0.4); color: #ffffff; text-decoration: line-through; cursor: not-allowed; font-weight: 700; }
         .time-block.selected { background: #fff; color: #000; border-color: #fff; box-shadow: 0 4px 10px rgba(255,255,255,0.2); }
@@ -130,52 +136,41 @@
         .val-pos { color: var(--color-red); } 
         .val-neg { color: var(--color-green); }
 
-        /* VŠEOBECNÉ SEZNAMY V FINANCÍCH */
-        .list-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); width: 100%; }
-        .list-item:last-child { border-bottom: none; }
-        .item-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--bg-input); border: var(--border-glass); display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0; }
-        .item-info { flex: 1; min-width: 0; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-start; }
-        .item-title { font-size: 1rem; font-weight: 600; color: #ffffff; white-space: normal; word-break: break-word; margin: 0; text-align: left; }
-        .item-sub { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px; }
-        .item-amount { font-weight: 700; font-size: 1.05rem; text-align: right; white-space: nowrap; flex-shrink: 0; }
-        .actions-group { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-
-        /* --- NOVÝ TO-DO LIST (Kulatý checkbox + Tenká kategorie) --- */
-        .todo-item { display: flex; align-items: center; padding: 16px 12px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; }
-        .todo-item:last-child { border-bottom: none; }
+        /* --- ČISTÝ TO-DO LIST BEZ VISUAL BUGŮ --- */
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: var(--border-glass); border-radius: 16px; margin-bottom: 10px; width: 100%; box-sizing: border-box; position: relative; }
+        .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; position: relative; z-index: 2; }
         
-        .todo-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
-        
-        /* Čistý kulatý checkbox */
+        /* Kulatý iOS checkbox s izolovaným CSS pro odstranění šedého pozadí */
         input[type="checkbox"].todo-checkbox {
             appearance: none; -webkit-appearance: none;
             width: 24px !important; height: 24px !important;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%; background: transparent;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            border-radius: 50% !important; background-color: transparent !important;
             margin: 0 !important; cursor: pointer;
             position: relative; transition: all 0.2s ease; flex-shrink: 0;
+            box-shadow: none !important; outline: none !important;
         }
-        input[type="checkbox"].todo-checkbox:checked { background: var(--color-blue); border-color: var(--color-blue); }
+        input[type="checkbox"].todo-checkbox:checked { background-color: var(--color-blue) !important; border-color: var(--color-blue) !important; }
         input[type="checkbox"].todo-checkbox:checked::after {
             content: '✓'; position: absolute; color: #fff; font-size: 14px; font-weight: 800;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
         .todo-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-        .todo-title { color: #ffffff; font-size: 1.05rem; font-weight: 500; text-align: left; line-height: 1.3; width: 100%; display: block; overflow-wrap: anywhere; word-break: break-word; }
-        .todo-done-text { text-decoration: line-through; opacity: 0.3; }
+        .todo-title { color: #ffffff !important; font-size: 1rem; font-weight: 500; text-align: left; line-height: 1.4; width: 100%; display: block; overflow-wrap: anywhere; word-break: break-word; }
+        .todo-done-text { text-decoration: line-through; opacity: 0.4; color: var(--color-text-muted) !important; }
         
-        /* Tenký text kategorie */
+        /* Tenký elegantní štítek kategorie */
         .todo-category-text { font-size: 0.75rem; font-weight: 400; margin-top: 4px; letter-spacing: 0.02em; }
         .cat-oprava { color: var(--color-red); opacity: 0.9; }
         .cat-tracky { color: var(--color-blue); opacity: 0.9; }
         .cat-nakup { color: var(--color-yellow); opacity: 0.9; }
         .cat-ostatni { color: #888; }
 
-        .btn-del-todo { background: transparent; border: none; color: var(--color-text-muted); font-size: 1.4rem; padding: 0 10px; cursor: pointer; transition: color 0.2s; flex-shrink: 0; }
+        .btn-del-todo { background: transparent; border: none; color: var(--color-text-muted); font-size: 1.4rem; padding: 0 10px; cursor: pointer; transition: color 0.2s; flex-shrink: 0; position: relative; z-index: 5; }
         .btn-del-todo:active { color: var(--color-red); }
 
-        .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; }
+        .todo-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; width: 100%; position: relative; z-index: 10; }
         .todo-tab { flex: 1; padding: 12px; background: var(--bg-input); border: var(--border-glass); border-radius: 14px; color: var(--color-text-muted); cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
         .todo-tab.active { background: #fff; color: #000; box-shadow: 0 4px 10px rgba(255,255,255,0.15); border-color: #fff; }
 
@@ -184,6 +179,16 @@
         .progress-text { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
         .progress-bar-fill { height: 100%; width: 0%; background: #ffffff; border-radius: 3px; transition: width 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); box-shadow: 0 0 8px #fff; }
+
+        /* VŠEOBECNÉ SEZNAMY (Finance, Faktury, Booking) */
+        .list-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); width: 100%; }
+        .list-item:last-child { border-bottom: none; }
+        .item-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--bg-input); border: var(--border-glass); display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0; }
+        .item-info { flex: 1; min-width: 0; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-start; }
+        .item-title { font-size: 1rem; font-weight: 600; color: #ffffff; white-space: normal; word-break: break-word; margin: 0; text-align: left; }
+        .item-sub { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px; }
+        .item-amount { font-weight: 700; font-size: 1.05rem; text-align: right; white-space: nowrap; flex-shrink: 0; }
+        .actions-group { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 
         .hidden { display: none !important; }
     </style>
@@ -226,7 +231,7 @@
                 <h2 class="card-title">Kdy má Jenda volno na studio?</h2>
                 <div class="form-row"><input type="date" id="shift-date-from"><input type="date" id="shift-date-to"></div>
                 <button class="btn-add" onclick="addAvailableDaysRange()">Uložit do kalendáře</button>
-                <button class="btn-add btn-back" style="background:transparent; color:#888; border:var(--border-glass);" onclick="toggleCalManage('none')">← Zpět na kalendář</button>
+                <button class="btn-add" style="background:transparent; color:var(--color-text-muted); border:var(--border-glass);" onclick="toggleCalManage('none')">← Zpět na kalendář</button>
                 <div id="shifts-list" style="margin-top:1.5rem; border-top: var(--border-glass); padding-top: 1rem;"></div>
             </div>
 
@@ -235,7 +240,7 @@
                 <select id="away-person"><option value="Jenda">Jenda</option><option value="Maty">Maty</option><option value="Dominik">Dominik</option></select>
                 <div class="form-row"><input type="date" id="away-from"><input type="date" id="away-to"></div>
                 <button class="btn-add" style="background: var(--color-red); color:#fff;" onclick="addAwayPeriod()">Uložit nepřítomnost</button>
-                <button class="btn-add btn-back" style="background:transparent; color:#888; border:var(--border-glass);" onclick="toggleCalManage('none')">← Zpět na kalendář</button>
+                <button class="btn-add" style="background:transparent; color:var(--color-text-muted); border:var(--border-glass);" onclick="toggleCalManage('none')">← Zpět na kalendář</button>
                 <div id="away-list" style="margin-top:1.5rem; border-top: var(--border-glass); padding-top: 1rem;"></div>
             </div>
 
@@ -353,7 +358,6 @@
                         <div class="balance-box"><p class="balance-name">Nikolas</p><p class="balance-val val-pos">12000 Kč</p></div>
                         <div class="balance-box"><p class="balance-name">Filip</p><p class="balance-val val-pos">4500 Kč</p></div>
                     </div>
-                    <p style="font-size: 0.7rem; color: var(--color-text-muted); text-align: center; margin-top: 0.75rem;">Maty a Dominik mají nájemné vyrovnané.</p>
                 </div>
                 <div class="card" style="text-align: center;">
                     <div id="rent-status-circle" class="rent-circle unpaid">!</div>
@@ -388,7 +392,7 @@
                     <option value="nakup">Potřeba koupit</option>
                     <option value="ostatni">Ostatní</option>
                 </select>
-                <button class="btn-add" onclick="addTodo()">Přidat úkol</button>
+                <button class="btn-add" onclick="addTodo()">Uložit úkol</button>
             </div>
             
             <div class="progress-wrapper">
@@ -422,7 +426,6 @@
     <div id="pdf-template" style="display:none; position: absolute; left: -9999px;"></div>
 
     <script>
-        // BEZPEČNÝ SUPABASE KLÍČ DLE TVÉHO ZADÁNÍ
         const supabaseUrl = 'https://woyyoirqflacdddxziwv.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndveXlvaXJxZmxhY2RkZHh6aXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTI0ODMsImV4cCI6MjA5NTE4ODQ4M30.dmIqJqHC5LUuEFYtDP0aiFeZ-lhRXz9ucXq9uFax7eo';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
@@ -434,7 +437,7 @@
 
         const baselineEquipDebt = { Jenda: -46440, Maty: -2270, Dominik: 11366, Nikolas: 20127, Filip: 13397 };
 
-        // NAČTENÍ DNEŠNÍHO DATA DO HLAVIČKY
+        // BEZPEČNÉ PŘIDÁNÍ DATA PO NAČTENÍ HTML (Zabrání mizení)
         window.addEventListener('DOMContentLoaded', () => {
             const dateEl = document.getElementById('today-date');
             if(dateEl) dateEl.innerText = new Date().toLocaleDateString('cs-CZ');
@@ -449,10 +452,11 @@
             
             const btn = document.getElementById('btn-submit'); btn.innerText = "Ověřuji...";
             
+            // Standardní ověření přes Supabase
             const { error } = await db.auth.signInWithPassword({ email: 'jan.lichy.w@gmail.com', password: input });
             
             if (error) { 
-                alert("Nesprávný přístupový kód štúdia! " + error.message);
+                alert("Nesprávný přístupový kód štúdia! Nebo spojení se Supabase.");
                 document.getElementById('login-password').value = "";
                 btn.innerText = "ODEMKNOUT";
             } else {
@@ -463,7 +467,7 @@
 
         async function startApp() {
             loggedUser = localStorage.getItem('depo_user');
-            if(!loggedUser) { db.auth.signOut(); location.reload(); return; }
+            if(!loggedUser) { return; }
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
@@ -476,11 +480,22 @@
             setInterval(pingPresence, 60000);
         }
 
-        // SEPAROVANÉ NAČÍTÁNÍ Z DATABÁZE
+        // SEPAROVANÉ BEZPEČNÉ NAČÍTÁNÍ
         async function loadAllData() {
-            try { const pReq = await db.from('purchases').select('*').order('id', { ascending: false }); if(pReq.data) data.purchases = pReq.data; } catch(e){}
-            try { const iReq = await db.from('invoices').select('*').order('id', { ascending: false }); if(iReq.data) data.invoices = iReq.data; } catch(e){}
-            try { const bReq = await db.from('bookings').select('*'); if(bReq.data) data.bookings = bReq.data.map(b => ({ ...b, crew: b.crew || '', services: b.services || '', notes: b.notes || '' })); } catch(e){}
+            try { const pReq = await db.from('purchases').select('*').order('id', { ascending: false }); if(pReq.data) data.purchases = pReq.data.map(p => ({ id: p.id, name: p.name, amount: p.amount, icon: p.icon, paidBy: p.paid_by, split: p.split })); } catch(e){}
+            try { const iReq = await db.from('invoices').select('*').order('id', { ascending: false }); if(iReq.data) data.invoices = iReq.data.map(i => ({ id: i.id, client: i.client, rec: i.rec, mix: i.mix, amount: i.amount, type: i.type })); } catch(e){}
+            
+            // TADY JE TA OPRAVA NA undefined:00 (Musí se namapovat start_hour do from)
+            try { 
+                const bReq = await db.from('bookings').select('*'); 
+                if(bReq.data) {
+                    data.bookings = bReq.data.map(b => ({ 
+                        id: b.id, date: b.date, from: b.start_hour, to: b.end_hour, 
+                        name: b.name, phone: b.phone, crew: b.crew || '', services: b.services || '', notes: b.notes || '' 
+                    })); 
+                }
+            } catch(e){}
+
             try { const tReq = await db.from('todos').select('*').order('id', { ascending: false }); if(tReq.data) data.todos = tReq.data; } catch(e){}
             try { const aDaysReq = await db.from('available_days').select('*'); if(aDaysReq.data) data.availableDays = aDaysReq.data; } catch(e){}
             try { const aPerReq = await db.from('away_periods').select('*'); if(aPerReq.data) data.awayPeriods = aPerReq.data; } catch(e){}
@@ -564,22 +579,22 @@
         }
 
         function updateUI() {
-            // VÝPOČTY FINANCÍ
+            // FINANČNÍ VÝPOČTY
             let debts = { ...baselineEquipDebt };
             document.getElementById('purchases-list').innerHTML = '';
             
             data.purchases.forEach((p, idx) => {
-                let splitMap = { 'all': 'Na 5', 'core': 'Na 3', 'vklad': 'Vklad' };
-                document.getElementById('purchases-list').innerHTML += `<div class="list-item"><div class="item-info"><p class="item-title">${p.name}</p><p class="item-sub">${p.paid_by} • ${splitMap[p.split] || 'Osobní'}</p></div><div class="actions-group"><p class="item-amount">${Math.round(p.amount)} Kč</p><button onclick="delData('purchases', ${idx})" style="background:rgba(255,69,58,0.1); border:1px solid rgba(255,69,58,0.2); color:var(--color-red); font-size:0.7rem; padding:4px 8px; border-radius:6px; cursor:pointer;">Smazat</button></div></div>`;
+                let splitMap = { 'all': 'Na 5 lidí', 'core': 'Na 3 lidi', 'vklad': 'Vklad / Splátka' };
+                document.getElementById('purchases-list').innerHTML += `<div class="list-item"><div class="item-info"><p class="item-title">${p.name}</p><p class="item-sub">${p.paidBy} • ${splitMap[p.split] || 'Osobní'}</p></div><div class="actions-group"><p class="item-amount">${Math.round(p.amount)} Kč</p><button onclick="delData('purchases', ${idx})" style="background:rgba(255,69,58,0.1); border:1px solid rgba(255,69,58,0.2); color:var(--color-red); font-size:0.7rem; padding:4px 8px; border-radius:6px; cursor:pointer;">Smazat</button></div></div>`;
                 
                 if (p.split === 'all') {
-                    if(debts[p.paid_by] !== undefined) debts[p.paid_by] -= p.amount;
+                    if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount;
                     let share = p.amount / 5; ['Jenda', 'Maty', 'Dominik', 'Nikolas', 'Filip'].forEach(n => debts[n] += share);
                 } else if (p.split === 'core') {
-                    if(debts[p.paid_by] !== undefined) debts[p.paid_by] -= p.amount;
+                    if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount;
                     let share = p.amount / 3; ['Jenda', 'Maty', 'Dominik'].forEach(n => debts[n] += share);
                 } else if (p.split === 'vklad') {
-                    if(debts[p.paid_by] !== undefined) debts[p.paid_by] -= p.amount; 
+                    if(debts[p.paidBy] !== undefined) debts[p.paidBy] -= p.amount; 
                 }
             });
 
@@ -588,7 +603,7 @@
                 if(el) { el.innerText = Math.abs(diff) + " Kč"; el.className = 'balance-val ' + (diff > 0 ? 'val-pos' : (diff < 0 ? 'val-neg' : '')); if(diff === 0) el.style.color = 'var(--color-text)'; }
             });
 
-            // RENDERING TO-DO LISTU (Kulaté zaškrtávátka a jemný text)
+            // RENDERING TO-DO LISTU S NOVÝM DESIGNEM
             document.getElementById('todos-list').innerHTML = '';
             let filteredTodos = data.todos.filter(t => currentTodoFilter === 'done' ? t.is_done : !t.is_done);
             if(filteredTodos.length === 0) document.getElementById('todos-list').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding: 10px;">Žádné úkoly k zobrazení</div>';
@@ -625,7 +640,7 @@
             document.getElementById('invoices-list').innerHTML = '';
             data.invoices.forEach((i, idx) => { let totalWithDph = Math.round(i.amount * 1.21); document.getElementById('invoices-list').innerHTML += `<div class="list-item"><div class="item-info"><p class="item-title">${i.client} <span style="font-size:0.7rem; font-weight:500;">(${i.type})</span></p><p class="item-sub">Rec: ${i.rec}h • Mix: ${i.mix}h</p></div><div class="actions-group"><p class="item-amount" style="color:var(--color-green); margin:0;">+ ${totalWithDph} Kč</p><button onclick="exportInvoicePDF(${idx})" style="background:rgba(10,132,255,0.1); border:1px solid rgba(10,132,255,0.2); color:var(--color-blue); font-size:0.7rem; padding:4px 10px; border-radius:6px; cursor:pointer; width:100%;">PDF</button><button onclick="delData('invoices', ${idx})" style="background:none; border:none; color:var(--color-text-muted); font-size:0.75rem; text-decoration:underline; cursor:pointer; width:100%; text-align:right;">Smazat</button></div></div>`; });
 
-            // KALENDÁŘ SPRÁVA SEZNAMY
+            // SPRÁVA KALENDÁŘE
             document.getElementById('shifts-list').innerHTML = '';
             data.availableDays.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach((d, idx) => {
                 document.getElementById('shifts-list').innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.05); color:#fff; font-weight:500;"><span>${d.date}</span> <button onclick="delData('available_days', ${idx}, true)" style="background:rgba(255,69,58,0.1); border:1px solid rgba(255,69,58,0.2); color:var(--color-red); border-radius:6px; padding: 4px 10px; font-size:0.7rem; cursor:pointer;">Smazat</button></div>`;
@@ -676,10 +691,26 @@
             else { const startHour = selectedHours[0]; const endHour = selectedHours[selectedHours.length - 1] + 1; info.innerText = `${startHour}:00 - ${endHour}:00 (${selectedHours.length} h)`; info.style.color = "var(--color-green)"; detailsForm.classList.remove('hidden'); }
         }
 
+        // OPRAVA: Přehozené pořadí ve funkci editBooking aby nezmizely hodiny
         function editBooking(idx) {
-            const b = data.bookings[idx]; editingBookingId = b.id; document.getElementById('booking-date').value = b.date;
-            selectedHours = []; for(let h = b.from; h < b.to; h++) selectedHours.push(h);
-            document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('active')); handleDateSelection(); updateSelectionInfo();
+            const b = data.bookings[idx]; 
+            editingBookingId = b.id; 
+            document.getElementById('booking-date').value = b.date;
+            
+            // NEJPRVE simulujeme klik na datum a vyčistíme UI
+            handleDateSelection(); 
+            
+            // AŽ POTOM naplníme pole a re-renderujeme
+            selectedHours = []; 
+            for(let h = b.from; h < b.to; h++) selectedHours.push(h);
+            
+            document.querySelectorAll('.cal-day').forEach(d => {
+                if(d.innerText == new Date(b.date).getDate()) d.classList.add('active');
+            });
+            
+            updateSelectionInfo();
+            renderBlocks(b.date); // Tohle znovu vykreslí bloky s třídou 'selected'
+            
             document.getElementById('client-name').value = b.name; document.getElementById('client-phone').value = b.phone || ''; document.getElementById('client-notes').value = b.notes || '';
             document.getElementById('crew-jenda').checked = b.crew.includes('Jenda'); document.getElementById('crew-maty').checked = b.crew.includes('Maty'); document.getElementById('crew-dominik').checked = b.crew.includes('Dominik');
             const srv = b.services || ''; document.getElementById('srv-rec').checked = srv.includes('Nahrávání'); document.getElementById('srv-mix').checked = srv.includes('Mix'); document.getElementById('srv-master').checked = srv.includes('Master');
@@ -691,6 +722,7 @@
             editingBookingId = null; document.getElementById('booking-date').value = ''; document.getElementById('client-name').value = ''; document.getElementById('client-phone').value = ''; document.getElementById('client-notes').value = '';
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); selectedHours = [];
             document.getElementById('btn-submit-booking').innerText = "Potvrdit Session"; document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('availability-warning').style.display = 'none'; document.getElementById('card-timeblocks').style.display = 'none'; document.getElementById('booking-details').classList.add('hidden');
+            renderCalendar();
         }
 
         async function submitBooking() {
@@ -725,7 +757,7 @@
         async function payRent(person) { let isPaid = data.rentPaid[person]; if(isPaid) { if(!confirm(`Zrušit platbu pro osobu ${person}?`)) return; isPaid = false; } else { isPaid = true; } let updateObj = {}; if (person === 'Jenda') updateObj.jenda_paid = isPaid; if (person === 'Maty') updateObj.maty_paid = isPaid; if (person === 'Dominik') updateObj.dominik_paid = isPaid; await db.from('rent').update(updateObj).eq('id', data.rentPaid.id); await loadAllData(); updateUI(); }
         
         async function delData(type, index, isArrayIdx = false) { 
-            if(confirm("Opravdu smazat z cloudu?")) { 
+            if(confirm("Opravdu smazat?")) { 
                 let item = (type === 'available_days') ? data.availableDays[index] : (type === 'away_periods' ? data.awayPeriods[index] : data[type][index]); 
                 if(item && item.id) { await db.from(type).delete().eq('id', item.id); await loadAllData(); if(type==='available_days' || type==='away_periods' || type==='bookings') renderCalendar(); updateUI(); } 
             } 
